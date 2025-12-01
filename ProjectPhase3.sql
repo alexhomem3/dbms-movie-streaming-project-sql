@@ -219,7 +219,8 @@ INSERT INTO movie (movie_id, title, production_company, length_of_movie, release
 (2, 'Inception', 'Warner Bros', 148, 2010, 'Sci-Fi'),
 (3, 'The Shawshank Redemption', 'Columbia Pictures', 142, 1994, 'Drama'),
 (4, 'Pulp Fiction', 'Miramax', 154, 1994, 'Crime'),
-(5, 'Interstellar', 'Paramount Pictures', 169, 2014, 'Sci-Fi');
+(5, 'Interstellar', 'Paramount Pictures', 169, 2014, 'Sci-Fi'),
+(6, 'Jack and Jill', 'Happy Madison Productions', 91, 2011, 'Comedy');
 
 -- 12. Insert Ratings
 INSERT INTO rating (movie_id, rating_id, user_name, stars, "date") VALUES
@@ -228,13 +229,16 @@ INSERT INTO rating (movie_id, rating_id, user_name, stars, "date") VALUES
 (2, 1, 'john.smith@email.com', 5.0, '2024-01-25'),
 (3, 1, 'mike.wilson@email.com', 5.0, '2024-03-10'),
 (4, 1, 'sarah.jones@email.com', 4.0, '2024-02-28'),
-(5, 1, 'emma.davis@email.com', 4.5, '2024-01-30');
+(5, 1, 'emma.davis@email.com', 4.5, '2024-01-30'),
+(6, 1, 'emma.davis@email.com', 1.0, '2024-01-30');
+
 
 -- 13. Insert Review Texts
 INSERT INTO rating2 (movie_id, rating_id, review_text) VALUES
 (1, 1, 'Absolutely incredible! Heath Ledger''s performance as the Joker is unforgettable. Best superhero movie ever made.'),
 (1, 2, 'Great movie with amazing action sequences and a compelling story. Christopher Nolan at his finest.'),
 (2, 1, 'Mind-bending and visually stunning. Had to watch it twice to fully understand the plot!'),
+(6, 1, 'This is the worst movie of all time!'),
 (3, 1, 'A masterpiece of storytelling. The friendship and hope portrayed in this film are truly moving.');
 
 -- 14. Link Users to Movies They Watched (watches)
@@ -246,6 +250,7 @@ INSERT INTO watches (email, movie_id) VALUES
 ('sarah.jones@email.com', 4),
 ('mike.wilson@email.com', 3),
 ('emma.davis@email.com', 5),
+('emma.davis@email.com', 6),
 ('alex.brown@email.com', 1);
 
 ------------- 
@@ -357,6 +362,7 @@ ORDER BY m.title ASC;
 -- This function upgrades an existing user to a subscriber.
 -- =========================================================================
 
+-- TODO: This should check if the user is a free user not standard
 -- Verify the email exists in User and plan exists in Plan
 SELECT u.email, p.plan_name
 FROM User u, plan p
@@ -406,6 +412,7 @@ VALUES (7, 'Standard');
 -- This function removes a movie from the catalog.
 -- =========================================================================
 
+-- TODO: This should be last
 -- Verify the movie exists
 SELECT movie_id, title 
 FROM movie 

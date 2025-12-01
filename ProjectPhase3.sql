@@ -515,12 +515,8 @@ LIMIT 1;
 -- =========================================================================
 
 SELECT 
-    movie_id,
     title,
-    length_of_movie,
-    genre,
-    release_year,
-    production_company
+    length_of_movie
 FROM movie
 WHERE length_of_movie = (SELECT MAX(length_of_movie) FROM movie);
 
@@ -528,27 +524,12 @@ WHERE length_of_movie = (SELECT MAX(length_of_movie) FROM movie);
 -- =========================================================================
 -- FUNCTION #10: View_watch_history (Query, joins multiple tables)
 -- =========================================================================
--- This function displays a user's watch history with movie details and ratings.
+-- This function displays a user's watch history.
 -- =========================================================================
 SELECT 
-    w.email,
-    w.movie_id,
-    m.title,
-    m.production_company,
-    m.length_of_movie,
-    m.release_year,
-    m.genre,
-    ROUND(AVG(r.stars), 1) AS average_stars,
-    COUNT(r.rating_id) AS total_ratings
-FROM watches w
-JOIN User u ON w.email = u.email
-JOIN movie m ON w.movie_id = m.movie_id
-LEFT JOIN rating r ON m.movie_id = r.movie_id
-WHERE 
-    w.email = 'john.smith@email.com'           
-    AND m.genre = 'Sci-Fi'                 
-GROUP BY w.email, w.movie_id, m.title, m.production_company, m.length_of_movie, m.release_year, m.genre
-HAVING AVG(r.stars) >= 4.0                      
+    m.title
+FROM watches w, movie m
+WHERE w.email = 'john.smith@email.com' AND w.movie_id = m.movie_id
 ORDER BY m.title ASC;
 
 -- =========================================================================

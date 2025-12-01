@@ -362,23 +362,19 @@ ORDER BY m.title ASC;
 -- This function upgrades an existing user to a subscriber.
 -- =========================================================================
 
--- TODO: This should check if the user is a free user not standard
--- Verify the email exists in User and plan exists in Plan
-SELECT u.email, p.plan_name
-FROM User u, plan p
-WHERE u.email = 'alex.brown@email.com' 
-  AND p.plan_name = 'Standard';
-
--- Check if user is not already an active subscriber
-SELECT h.email
-FROM has h
-WHERE h.email = 'alex.brown@email.com'
+-- Confirm user is a FREE USER (not a standard subscriber)
+SELECT u.email
+FROM User u
+WHERE u.email = 'alex.brown@email.com'
   AND EXISTS (
         SELECT 1
-        FROM subscription s
-        WHERE s.sub_id = h.sub_id
-          AND s.status = 'active'
-          AND s.end_date > DATE('now')
+        FROM free_user f
+        WHERE f.email = u.email
+  )
+  AND NOT EXISTS (
+        SELECT 1
+        FROM subscriber s
+        WHERE s.email = u.email
   );
 
 -- Promote user to subscriber

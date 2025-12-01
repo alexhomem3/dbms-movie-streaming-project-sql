@@ -366,10 +366,14 @@ WHERE u.email = 'alex.brown@email.com'
 -- Check if user is not already an active subscriber
 SELECT h.email
 FROM has h
-JOIN subscription s ON h.sub_id = s.sub_id
 WHERE h.email = 'alex.brown@email.com'
-  AND s.status = 'active'
-  AND s.end_date > DATE('now');
+  AND EXISTS (
+        SELECT 1
+        FROM subscription s
+        WHERE s.sub_id = h.sub_id
+          AND s.status = 'active'
+          AND s.end_date > DATE('now')
+  );
 
 -- Promote user to subscriber
 INSERT INTO subscriber (email)
@@ -479,14 +483,16 @@ ORDER BY average_rating DESC, m.title ASC;
 -- This function calculates the total number of movies each user has watched.
 -- =========================================================================
 
-SELECT 
+SELECT
     u.email,
     u.first,
     u.last,
-    COUNT(w.movie_id) AS total_movies_watched
+    (
+        SELECT COUNT(*)
+        FROM watches w
+        WHERE w.email = u.email
+    ) AS total_movies_watched
 FROM User u
-LEFT JOIN watches w ON u.email = w.email
-GROUP BY u.email, u.first, u.last
 ORDER BY total_movies_watched DESC, u.email ASC;
 
 
@@ -496,14 +502,16 @@ ORDER BY total_movies_watched DESC, u.email ASC;
 -- This function finds the subscription plan with the highest number of subscribers.
 -- =========================================================================
 
-SELECT 
+SELECT
     p.plan_name,
     p.monthly_price,
     p.max_screens,
-    COUNT(t.sub_id) AS total_subscriptions
+    (
+        SELECT COUNT(*)
+        FROM "to" t
+        WHERE t.plan_name = p.plan_name
+    ) AS total_subscriptions
 FROM plan p
-LEFT JOIN "to" t ON p.plan_name = t.plan_name
-GROUP BY p.plan_name, p.monthly_price, p.max_screens
 ORDER BY total_subscriptions DESC
 LIMIT 1;
 

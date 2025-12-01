@@ -505,14 +505,16 @@ ORDER BY total_movies_watched DESC, u.email ASC;
 -- This function finds the subscription plan with the highest number of subscribers.
 -- =========================================================================
 
-SELECT 
+SELECT
     p.plan_name,
     p.monthly_price,
     p.max_screens,
-    COUNT(t.sub_id) AS total_subscriptions
+    (
+        SELECT COUNT(*)
+        FROM "to" t
+        WHERE t.plan_name = p.plan_name
+    ) AS total_subscriptions
 FROM plan p
-LEFT JOIN "to" t ON p.plan_name = t.plan_name
-GROUP BY p.plan_name, p.monthly_price, p.max_screens
 ORDER BY total_subscriptions DESC
 LIMIT 1;
 

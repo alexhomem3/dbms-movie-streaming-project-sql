@@ -276,15 +276,15 @@ VALUES ('newuser@email.com', 5556667777);
 
 -- Insert into subscriber
 INSERT INTO subscriber (email)
-VALUES ('subscriber.new@email.com');
+VALUES ('newuser@email.com');
 
 -- Insert payment method
 INSERT INTO subscriber2 (email, payment_method)
-VALUES ('subscriber.new@email.com', 9876543210123456);
+VALUES ('newuser@email.com', 9876543210123456);
 
 -- Insert billing address
 INSERT INTO subscriber3 (email, street, city, "state", zip)
-VALUES ('subscriber.new@email.com', '100 Broadway', 'Nashville', 'Tennessee', 37201);
+VALUES ('newuser@email.com', '100 Broadway', 'Nashville', 'Tennessee', 37201);
 
 -- Create subscription
 INSERT INTO subscription (sub_id, start_date, end_date, status)
@@ -292,7 +292,7 @@ VALUES (6, '2025-12-01', '2026-12-01', 'active');
 
 -- Link subscriber to subscription
 INSERT INTO has (email, sub_id)
-VALUES ('subscriber.new@email.com', 6);
+VALUES ('newuser@email.com', 6);
 
 -- Link subscription to plan
 INSERT INTO "to" (sub_id, plan_name)
@@ -314,7 +314,7 @@ LEFT JOIN subscription sub ON h.sub_id = sub.sub_id
 LEFT JOIN "to" t ON sub.sub_id = t.sub_id
 LEFT JOIN plan p ON t.plan_name = p.plan_name
 LEFT JOIN subscriber s ON u.email = s.email
-WHERE u.email = 'subscriber.new@email.com';
+WHERE u.email = 'newuser@email.com';
 
 
 -- =========================================================================

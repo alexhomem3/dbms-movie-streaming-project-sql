@@ -381,6 +381,10 @@ WHERE u.email = 'alex.brown@email.com'
 INSERT INTO subscriber (email)
 VALUES ('alex.brown@email.com');
 
+-- Remove user from free_user
+DELETE FROM free_user
+WHERE email = 'alex.brown@email.com';
+
 -- Insert payment method
 INSERT INTO subscriber2 (email, payment_method)
 VALUES ('alex.brown@email.com', 6789012345678901);

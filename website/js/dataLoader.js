@@ -32,9 +32,9 @@ async function fetchLocalSQLData() {
     try {
         // Try different possible paths
         const paths = [
-            'data.sql',  // Local copy in standalone directory
-            '../../dbms-movie-streaming-project-sql/ProjectPhase3.sql',
-            '../../../dbms-movie-streaming-project-sql/ProjectPhase3.sql'
+            '../dbms-movie-streaming-project-sql/ProjectPhase3.sql',
+            '../ProjectPhase3.sql',
+            '../../dbms-movie-streaming-project-sql/ProjectPhase3.sql'
         ];
         
         for (const path of paths) {

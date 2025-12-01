@@ -16,9 +16,9 @@
 
 CREATE TABLE User (
     email varchar(255) PRIMARY KEY,
-    "first" varchar(50) NOT NULL,
-    middle varchar(50),
-    "last" varchar(50) NOT NULL,
+    first_name varchar(50) NOT NULL,
+    middle_name varchar(50),
+    last_name varchar(50) NOT NULL,
     birth_date date,
     sign_up_date date NOT NULL
 );

@@ -13,9 +13,9 @@
 
 CREATE TABLE User (
     email varchar(255) PRIMARY KEY,
-    first_name varchar(50) NOT NULL,
-    middle_name varchar(50),
-    last_name varchar(50) NOT NULL,
+    "first" varchar(50) NOT NULL,
+    middle varchar(50),
+    "last" varchar(50) NOT NULL,
     birth_date date,
     sign_up_date date NOT NULL
 );
@@ -143,7 +143,7 @@ CREATE TABLE watches (
 -------------
 
 -- 1. Insert Users
-INSERT INTO User (email, first_name, middle_name, last_name, birth_date, sign_up_date) VALUES
+INSERT INTO User (email, "first", middle, "last", birth_date, sign_up_date) VALUES
 ('john.smith@email.com', 'John', 'Michael', 'Smith', '1990-05-15', '2024-01-10'),
 ('sarah.jones@email.com', 'Sarah', NULL, 'Jones', '1985-08-22', '2024-02-14'),
 ('mike.wilson@email.com', 'Mike', 'David', 'Wilson', '1992-11-30', '2024-03-05'),
@@ -267,7 +267,7 @@ FROM User
 WHERE email = 'newuser@email.com';
 
 -- Insert the new user
-INSERT INTO User (email, first_name, middle_name, last_name, birth_date, sign_up_date)
+INSERT INTO User (email, "first", middle, "last", birth_date, sign_up_date)
 VALUES ('newuser@email.com', 'Jane', 'Marie', 'Doe', '1993-06-20', '2024-12-01');
 
 -- Insert phone number for the user
@@ -301,8 +301,8 @@ VALUES (6, 'Premium');
 -- Display confirmation
 SELECT 
     u.email,
-    u.first_name,
-    u.last_name,
+    u.first,
+    u.last,
     u.sign_up_date,
     s.email AS subscriber_email,
     h.sub_id,
@@ -428,24 +428,24 @@ WHERE movie_id = 4;
 -- =========================================================================
 
 -- Verify user exists
-SELECT email, first_name, middle_name, last_name, birth_date
+SELECT email, "first", middle, "last", birth_date
 FROM User
 WHERE email = 'john.smith@email.com';
 
 -- Update user information
 UPDATE User
 SET 
-    first_name = 'Jonathan',
-    middle_name = 'Robert',
+    "first" = 'Jonathan',
+    middle = 'Robert',
     birth_date = '1990-05-16'
 WHERE email = 'john.smith@email.com';
 
 -- Display updated user information for confirmation
 SELECT 
     email,
-    first_name,
-    middle_name,
-    last_name,
+    "first",
+    middle,
+    "last",
     birth_date,
     sign_up_date
 FROM User
@@ -480,12 +480,12 @@ ORDER BY average_rating DESC, m.title ASC;
 
 SELECT 
     u.email,
-    u.first_name,
-    u.last_name,
+    u.first,
+    u.last,
     COUNT(w.movie_id) AS total_movies_watched
 FROM User u
 LEFT JOIN watches w ON u.email = w.email
-GROUP BY u.email, u.first_name, u.last_name
+GROUP BY u.email, u.first, u.last
 ORDER BY total_movies_watched DESC, u.email ASC;
 
 

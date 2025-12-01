@@ -328,14 +328,13 @@ WHERE u.email = 'newuser@email.com'
 -- that are 180 mins long or shorter, and are rated 4 stars or above
 -- =========================================================================
 SELECT 
-    m.movie_id,
     m.title,
     m.production_company,
     m.length_of_movie,
     m.release_year,
     m.genre,
     ROUND(AVG(r.stars), 1) AS average_stars,
-    COUNT(r.rating_id)      AS review_count
+    COUNT(r.rating_id) AS review_count
 FROM movie  m,
      rating r
 WHERE m.movie_id = r.movie_id -- join condition
@@ -344,7 +343,6 @@ WHERE m.movie_id = r.movie_id -- join condition
   AND m.release_year BETWEEN 2000 AND 2024
   AND m.length_of_movie <= 180
 GROUP BY
-    m.movie_id,
     m.title,
     m.production_company,
     m.length_of_movie,
@@ -463,14 +461,13 @@ WHERE email = 'john.smith@email.com';
 -- =========================================================================
 
 SELECT 
-    m.movie_id,
     m.title,
     m.genre,
     m.release_year,
-    ROUND(AVG(r.stars), 1) AS average_rating,
+    ROUND(AVG(r.stars), 2) AS average_rating,
     COUNT(r.rating_id) AS total_ratings
-FROM movie m
-JOIN rating r ON m.movie_id = r.movie_id
+FROM movie m, rating r
+WHERE m.movie_id = r.movie_id
 GROUP BY m.movie_id, m.title, m.genre, m.release_year
 HAVING AVG(r.stars) >= 4.0
 ORDER BY average_rating DESC, m.title ASC;

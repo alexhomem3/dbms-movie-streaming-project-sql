@@ -1,0 +1,635 @@
+/* REMS - Real Estate Management System Custom Styles */
+
+:root {
+    --primary-color: #0066CC;
+    --secondary-color: #FF6B35;
+    --accent-color: #FFD700;
+    --success-color: #28a745;
+    --info-color: #17a2b8;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --light-color: #ffffff;
+    --dark-color: #212529;
+    --background-color: #f8f9fa;
+    --text-color: #212529;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    font-weight: 500;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+/* Content Sections */
+.content-section {
+    min-height: 80vh;
+}
+
+/* Card Enhancements */
+.card {
+    border: 2px solid var(--border-color);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    margin-bottom: 1rem;
+    background-color: var(--card-bg);
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+    border-color: var(--primary-color);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid var(--border-color);
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+/* Property Cards */
+.property-card {
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.property-card:hover {
+    transform: translateY(-2px);
+}
+
+.property-price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.property-details {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Statistics Cards */
+.stat-card {
+    border-left: 4px solid var(--primary-color);
+}
+
+.stat-card.bg-success {
+    border-left-color: var(--success-color);
+}
+
+.stat-card.bg-info {
+    border-left-color: var(--info-color);
+}
+
+.stat-card.bg-warning {
+    border-left-color: var(--warning-color);
+}
+
+/* Tables */
+.table th {
+    background-color: #e9ecef;
+    border-top: none;
+    font-weight: 700;
+    color: var(--text-color);
+    border-bottom: 2px solid var(--border-color);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #e3f2fd;
+    color: var(--text-color);
+}
+
+.table {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+/* Forms */
+.form-control {
+    border: 2px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.3rem rgba(0, 102, 204, 0.25);
+    background-color: var(--card-bg);
+}
+
+.form-select {
+    border: 2px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.3rem rgba(0, 102, 204, 0.25);
+    background-color: var(--card-bg);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+/* Buttons */
+.btn {
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-width: 2px;
+    padding: 0.5rem 1rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0052a3;
+    border-color: #0052a3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 102, 204, 0.3);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #218838;
+    transform: translateY(-1px);
+}
+
+.btn-info {
+    background-color: var(--info-color);
+    border-color: var(--info-color);
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #138496;
+    transform: translateY(-1px);
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    border-color: var(--warning-color);
+    color: var(--text-color);
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+    border-color: #e0a800;
+    transform: translateY(-1px);
+}
+
+/* Badges */
+.badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+}
+
+.badge.bg-success {
+    background-color: var(--success-color) !important;
+    color: white;
+}
+
+.badge.bg-primary {
+    background-color: var(--primary-color) !important;
+    color: white;
+}
+
+.badge.bg-warning {
+    background-color: var(--warning-color) !important;
+    color: var(--text-color);
+}
+
+.badge.bg-info {
+    background-color: var(--info-color) !important;
+    color: white;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+    color: white;
+}
+
+/* Alerts */
+.alert {
+    border: 2px solid;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeaa7;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    background-color: var(--primary-color) !important;
+    border-bottom: 3px solid #0052a3;
+}
+
+.nav-link {
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: white !important;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin: 0 0.25rem;
+}
+
+.nav-link:hover {
+    background-color: rgba(255,255,255,0.2) !important;
+    color: white !important;
+    transform: translateY(-1px);
+}
+
+.nav-link.active {
+    background-color: rgba(255,255,255,0.3) !important;
+    color: white !important;
+    font-weight: 700;
+}
+
+.navbar-brand {
+    color: white !important;
+    font-weight: 800;
+    font-size: 1.75rem;
+}
+
+/* Jumbotron */
+.jumbotron {
+    background: linear-gradient(135deg, var(--primary-color), #0052a3);
+    border-radius: 1rem;
+    border: 3px solid #0052a3;
+    box-shadow: 0 8px 16px rgba(0, 102, 204, 0.3);
+}
+
+.jumbotron h1 {
+    color: white;
+    font-weight: 800;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.jumbotron p {
+    color: white;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Search Form */
+.search-form {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+}
+
+/* Property Grid */
+.property-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Agent Performance */
+.performance-metric {
+    text-align: center;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.performance-metric .value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.performance-metric .label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Charts */
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 1rem 0;
+}
+
+/* Transaction Status */
+.status-pending {
+    color: var(--warning-color);
+}
+
+.status-completed {
+    color: var(--success-color);
+}
+
+.status-cancelled {
+    color: var(--danger-color);
+}
+
+/* Property Status */
+.property-for-sale {
+    color: var(--success-color);
+}
+
+.property-sold {
+    color: var(--info-color);
+}
+
+.property-pending {
+    color: var(--warning-color);
+}
+
+.property-off-market {
+    color: var(--danger-color);
+}
+
+/* Custom Utilities */
+.text-primary-custom {
+    color: var(--primary-color) !important;
+}
+
+.bg-primary-custom {
+    background-color: var(--primary-color) !important;
+}
+
+.border-primary-custom {
+    border-color: var(--primary-color) !important;
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+/* Modal Enhancements */
+.modal-content {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    background-color: var(--light-color);
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Table Actions */
+.table-actions {
+    white-space: nowrap;
+}
+
+.table-actions .btn {
+    margin: 0 2px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        font-size: 0.875rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .jumbotron {
+        padding: 2rem 1rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .property-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-actions .btn {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .navbar,
+    .btn,
+    .modal,
+    .card-footer {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #dee2e6;
+    }
+    
+    .container {
+        max-width: none;
+        padding: 0;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #0000FF;
+        --text-color: #000000;
+        --background-color: #FFFFFF;
+        --card-bg: #FFFFFF;
+        --border-color: #000000;
+    }
+    
+    .card {
+        border: 3px solid var(--border-color);
+    }
+    
+    .btn {
+        border-width: 3px;
+        font-weight: 700;
+    }
+    
+    .table th {
+        background-color: #000000;
+        color: #FFFFFF;
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border: 1px solid var(--border-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 6px;
+    border: 2px solid #f8f9fa;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0052a3;
+}
+
+/* Text and Content Improvements */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+.text-muted {
+    color: #6c757d !important;
+    font-weight: 500;
+}
+
+.card-title {
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+.card-text {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Statistics Cards */
+.card.bg-primary,
+.card.bg-success,
+.card.bg-info,
+.card.bg-warning {
+    border: 3px solid;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.card.bg-primary {
+    border-color: #0052a3;
+}
+
+.card.bg-success {
+    border-color: #218838;
+}
+
+.card.bg-info {
+    border-color: #138496;
+}
+
+.card.bg-warning {
+    border-color: #e0a800;
+}

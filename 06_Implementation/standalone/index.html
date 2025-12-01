@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlix - Movie Streaming Platform</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <i class="fas fa-play me-2"></i>StreamFlix
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home" onclick="showSection('home')">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#movies" onclick="showSection('movies')">
+                            <i class="fas fa-film me-1"></i>Movies
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#users" onclick="showSection('users')">
+                            <i class="fas fa-users me-1"></i>Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#subscriptions" onclick="showSection('subscriptions')">
+                            <i class="fas fa-credit-card me-1"></i>Subscriptions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#ratings" onclick="showSection('ratings')">
+                            <i class="fas fa-star me-1"></i>Ratings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#reports" onclick="showSection('reports')">
+                            <i class="fas fa-chart-bar me-1"></i>Analytics
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container-fluid py-4">
+        <!-- Home Section -->
+        <div id="home-section" class="content-section">
+            <div class="container">
+                <!-- Welcome Section -->
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <div class="jumbotron bg-primary text-white p-2 rounded">
+                            <h4 class="mb-1"><i class="fas fa-play me-2"></i>StreamFlix Dashboard</h4>
+                            <p class="mb-1 small">Movie Streaming Platform</p>
+                            <button class="btn btn-light btn-sm" onclick="showSection('movies')">
+                                <i class="fas fa-film me-1"></i>Browse Movies
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-2">
+                    <div class="col-md-3 mb-1">
+                        <div class="card bg-primary text-white">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title mb-0" id="total-movies">150</h6>
+                                        <p class="card-text mb-0 small">Movies</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-film"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-1">
+                        <div class="card bg-success text-white">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title mb-0" id="total-users">2,500</h6>
+                                        <p class="card-text mb-0 small">Users</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-1">
+                        <div class="card bg-info text-white">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title mb-0" id="total-subscriptions">1,800</h6>
+                                        <p class="card-text mb-0 small">Subscriptions</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-1">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body p-2">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title mb-0" id="total-ratings">4.2</h6>
+                                        <p class="card-text mb-0 small">Avg Rating</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Movies -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h4><i class="fas fa-film me-2"></i>Featured Movies</h4>
+                        <div class="row" id="recent-movies">
+                            <!-- Movies will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row">
+                    <div class="col-12">
+                        <h4><i class="fas fa-bolt me-2"></i>Quick Actions</h4>
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <div class="card text-center">
+                                    <div class="card-body p-3">
+                                        <i class="fas fa-film fa-2x text-primary mb-2"></i>
+                                        <h6 class="card-title">Browse Movies</h6>
+                                        <button class="btn btn-primary btn-sm" onclick="showSection('movies')">Browse</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="card text-center">
+                                    <div class="card-body p-3">
+                                        <i class="fas fa-users fa-2x text-success mb-2"></i>
+                                        <h6 class="card-title">Manage Users</h6>
+                                        <button class="btn btn-success btn-sm" onclick="showSection('users')">Manage</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="card text-center">
+                                    <div class="card-body p-3">
+                                        <i class="fas fa-credit-card fa-2x text-info mb-2"></i>
+                                        <h6 class="card-title">Subscriptions</h6>
+                                        <button class="btn btn-info btn-sm" onclick="showSection('subscriptions')">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <div class="card text-center">
+                                    <div class="card-body p-3">
+                                        <i class="fas fa-chart-bar fa-2x text-warning mb-2"></i>
+                                        <h6 class="card-title">Analytics</h6>
+                                        <button class="btn btn-warning btn-sm" onclick="showSection('reports')">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Movies Section -->
+        <div id="movies-section" class="content-section" style="display: none;">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h3><i class="fas fa-film me-2"></i>Movies</h3>
+                        <p class="text-muted">Browse and discover movies</p>
+                    </div>
+                </div>
+
+                <!-- Search Form -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6><i class="fas fa-search me-2"></i>Search Movies</h6>
+                            </div>
+                            <div class="card-body p-3">
+                                <form id="movie-search-form">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-2">
+                                            <label for="search-title" class="form-label small">Title</label>
+                                            <input type="text" class="form-control form-control-sm" id="search-title" placeholder="Movie title">
+                                        </div>
+                                        <div class="col-md-3 mb-2">
+                                            <label for="search-genre" class="form-label small">Genre</label>
+                                            <select class="form-select form-select-sm" id="search-genre">
+                                                <option value="">All Genres</option>
+                                                <option value="Action">Action</option>
+                                                <option value="Comedy">Comedy</option>
+                                                <option value="Drama">Drama</option>
+                                                <option value="Sci-Fi">Sci-Fi</option>
+                                                <option value="Crime">Crime</option>
+                                                <option value="Horror">Horror</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 mb-2">
+                                            <label for="search-year" class="form-label small">Year</label>
+                                            <input type="number" class="form-control form-control-sm" id="search-year" placeholder="Year">
+                                        </div>
+                                        <div class="col-md-3 mb-2">
+                                            <label for="search-rating" class="form-label small">Min Rating</label>
+                                            <select class="form-select form-select-sm" id="search-rating">
+                                                <option value="">Any Rating</option>
+                                                <option value="4.5">4.5+ Stars</option>
+                                                <option value="4.0">4.0+ Stars</option>
+                                                <option value="3.5">3.5+ Stars</option>
+                                                <option value="3.0">3.0+ Stars</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex align-items-end">
+                                            <button type="submit" class="btn btn-primary btn-sm me-2">
+                                                <i class="fas fa-search me-1"></i>Search
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearSearch()">
+                                                <i class="fas fa-times me-1"></i>Clear
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movies Grid -->
+                <div class="row" id="movies-grid">
+                    <!-- Movies will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users-section" class="content-section" style="display: none;">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h3><i class="fas fa-users me-2"></i>Users</h3>
+                        <p class="text-muted">Manage user accounts</p>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <h5>User List</h5>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <button class="btn btn-success" onclick="showAddUserForm()">
+                            <i class="fas fa-plus me-1"></i>Add User
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Birth Date</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table">
+                            <!-- Users will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subscriptions Section -->
+        <div id="subscriptions-section" class="content-section" style="display: none;">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h3><i class="fas fa-credit-card me-2"></i>Subscriptions</h3>
+                        <p class="text-muted">Manage subscription plans</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Plan</th>
+                                <th>Price</th>
+                                <th>Max Screens</th>
+                                <th>Status</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Billing Address</th>
+                                <th>Payment Method</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subscriptions-table">
+                            <!-- Subscriptions will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ratings Section -->
+        <div id="ratings-section" class="content-section" style="display: none;">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h3><i class="fas fa-star me-2"></i>Ratings & Reviews</h3>
+                        <p class="text-muted">View and manage ratings</p>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Movie</th>
+                                <th>User</th>
+                                <th>Rating</th>
+                                <th>Review</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ratings-table">
+                            <!-- Ratings will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports-section" class="content-section" style="display: none;">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h3><i class="fas fa-chart-bar me-2"></i>Analytics & Reports</h3>
+                        <p class="text-muted">Platform performance insights</p>
+                    </div>
+                </div>
+
+                <!-- Charts and Stats Row -->
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6><i class="fas fa-chart-line me-2"></i>Monthly Views & Subscriptions</h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <canvas id="monthlyViewsChart" height="40"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6><i class="fas fa-chart-pie me-2"></i>Genre Distribution</h6>
+                                    </div>
+                                    <div class="card-body p-2">
+                                        <canvas id="genreDistributionChart" height="40"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistics Cards on the Right -->
+                    <div class="col-md-6 mb-3">
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h5 class="card-title mb-1" id="analytics-movies">150</h5>
+                                                <p class="card-text mb-0 small">Movies</p>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-film fa-lg"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h5 class="card-title mb-1" id="analytics-users">2,500</h5>
+                                                <p class="card-text mb-0 small">Users</p>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-users fa-lg"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h5 class="card-title mb-1" id="analytics-subscriptions">1,800</h5>
+                                                <p class="card-text mb-0 small">Subscriptions</p>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-credit-card fa-lg"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body p-2">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h5 class="card-title mb-1" id="analytics-rating">4.2</h5>
+                                                <p class="card-text mb-0 small">Avg Rating</p>
+                                            </div>
+                                            <div class="align-self-center">
+                                                <i class="fas fa-star fa-lg"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Rated Movies -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6><i class="fas fa-trophy me-2"></i>Top Rated Movies</h6>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Rank</th>
+                                                <th>Movie Title</th>
+                                                <th>Genre</th>
+                                                <th>Year</th>
+                                                <th>Rating</th>
+                                                <th>Total Ratings</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="top-movies-table">
+                                            <!-- Top movies will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <!-- Add Property Modal -->
+    <div class="modal fade" id="addPropertyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Property</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-property-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="property-address" class="form-label">Address *</label>
+                                <input type="text" class="form-control" id="property-address" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="property-city" class="form-label">City *</label>
+                                <input type="text" class="form-control" id="property-city" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="property-state" class="form-label">State *</label>
+                                <input type="text" class="form-control" id="property-state" maxlength="2" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="property-zip" class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" id="property-zip">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="property-type" class="form-label">Property Type *</label>
+                                <select class="form-select" id="property-type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Residential">Residential</option>
+                                    <option value="Commercial">Commercial</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="property-bedrooms" class="form-label">Bedrooms</label>
+                                <input type="number" class="form-control" id="property-bedrooms" min="0">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="property-bathrooms" class="form-label">Bathrooms</label>
+                                <input type="number" class="form-control" id="property-bathrooms" min="0" step="0.5">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="property-sqft" class="form-label">Square Footage</label>
+                                <input type="number" class="form-control" id="property-sqft" min="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="property-lot-size" class="form-label">Lot Size (sqft)</label>
+                                <input type="number" class="form-control" id="property-lot-size" min="0">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="property-year-built" class="form-label">Year Built</label>
+                                <input type="number" class="form-control" id="property-year-built" min="1800" max="2024">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="property-price" class="form-label">Listing Price *</label>
+                                <input type="number" class="form-control" id="property-price" min="0" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="property-agent" class="form-label">Listing Agent *</label>
+                                <select class="form-select" id="property-agent" required>
+                                    <option value="">Select Agent</option>
+                                    <!-- Agents will be loaded here -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="property-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="property-description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="addProperty()">Add Property</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Client Modal -->
+    <div class="modal fade" id="addClientModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-client-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="client-firstname" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="client-firstname" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="client-lastname" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="client-lastname" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="client-email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="client-email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="client-phone" class="form-label">Phone *</label>
+                                <input type="tel" class="form-control" id="client-phone" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="client-address" class="form-label">Address *</label>
+                            <input type="text" class="form-control" id="client-address" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="client-type" class="form-label">Client Type *</label>
+                            <select class="form-select" id="client-type" required>
+                                <option value="">Select Type</option>
+                                <option value="Buyer">Buyer</option>
+                                <option value="Seller">Seller</option>
+                                <option value="Both">Both</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="addClient()">Add Client</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Agent Modal -->
+    <div class="modal fade" id="addAgentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Agent</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-agent-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="agent-firstname" class="form-label">First Name *</label>
+                                <input type="text" class="form-control" id="agent-firstname" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="agent-lastname" class="form-label">Last Name *</label>
+                                <input type="text" class="form-control" id="agent-lastname" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="agent-email" class="form-label">Email *</label>
+                                <input type="email" class="form-control" id="agent-email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="agent-phone" class="form-label">Phone *</label>
+                                <input type="tel" class="form-control" id="agent-phone" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="agent-license" class="form-label">License Number *</label>
+                                <input type="text" class="form-control" id="agent-license" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="agent-specialization" class="form-label">Specialization *</label>
+                                <input type="text" class="form-control" id="agent-specialization" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="agent-commission" class="form-label">Commission Rate *</label>
+                                <input type="number" class="form-control" id="agent-commission" min="0" max="1" step="0.01" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="agent-hire-date" class="form-label">Hire Date *</label>
+                                <input type="date" class="form-control" id="agent-hire-date" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-info" onclick="addAgent()">Add Agent</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/dataLoader.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

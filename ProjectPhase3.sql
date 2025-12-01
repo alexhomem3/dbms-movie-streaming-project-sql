@@ -460,14 +460,12 @@ ORDER BY average_rating DESC, m.title ASC;
 
 SELECT
     u.email,
-    u.first,
-    u.last,
-    (
-        SELECT COUNT(*)
-        FROM watches w
-        WHERE w.email = u.email
-    ) AS total_movies_watched
-FROM User u
+    u.first_name,
+    u.last_name,
+    COUNT(w.movie_id) AS total_movies_watched
+FROM User u, watches w
+WHERE u.email = w.email
+GROUP BY u.email, u.first_name, u.last_name
 ORDER BY total_movies_watched DESC, u.email ASC;
 
 

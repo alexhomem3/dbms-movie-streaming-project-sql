@@ -509,17 +509,14 @@ ORDER BY total_movies_watched DESC, u.email ASC;
 -- This function finds the subscription plan with the highest number of subscribers.
 -- =========================================================================
 
-SELECT
+SELECT 
     p.plan_name,
-    p.monthly_price,
-    p.max_screens,
-    (
-        SELECT COUNT(*)
-        FROM "to" t
-        WHERE t.plan_name = p.plan_name
-    ) AS total_subscriptions
-FROM plan p
-ORDER BY total_subscriptions DESC
+    COUNT(DISTINCT h.email) AS user_count
+FROM plan p, "to" t, has h
+WHERE p.plan_name = t.plan_name
+  AND t.sub_id = h.sub_id
+GROUP BY p.plan_name
+ORDER BY user_count DESC
 LIMIT 1;
 
 
@@ -546,15 +543,3 @@ SELECT
 FROM watches w, movie m
 WHERE w.email = 'john.smith@email.com' AND w.movie_id = m.movie_id
 ORDER BY m.title ASC;
-
--- =========================================================================
--- FUNCTION #11: Average_Plan_Price (Aggregation, single table query)
--- =========================================================================
--- This function calculates the average monthly price across all subscription plans.
--- =========================================================================
-SELECT 
-    ROUND(AVG(monthly_price), 2) AS average_monthly_plan_price,
-    COUNT(*) AS total_plans,
-    MIN(monthly_price) AS cheapest_plan,
-    MAX(monthly_price) AS most_expensive_plan
-FROM plan;

@@ -6,10 +6,7 @@
 -- Database Description: A movie streaming platform to manage users, subscriptions, movies, plans, and ratings
 
 ------------- 
--- Provide SQL source codes for creating all the tables in your application which should
--- demonstrate the correct use of the following constraints:
--- o Each table has a primary key
--- o Foreign keys are correctly defined
+-- Creating Application Tables
 -------------
 
 -- 1. USERS
@@ -142,8 +139,7 @@ CREATE TABLE watches (
 
 
 ------------- 
--- Provide SQL source codes for populating your tables 
--- (i.e., insertion commands you used to insert data to your database)
+-- Populating Tables
 -------------
 
 -- 1. Insert Users
@@ -255,31 +251,307 @@ INSERT INTO watches (email, movie_id) VALUES
 
 
 ------------- 
--- Provide SQL source codes for each of the required functions which can be more than what
--- you have demonstrated in class.
+-- Functions
 ------------- 
 
--- Have at least one Insertion.
+-- =========================================================================
+-- FUNCTION #1: Create_User (Insertion)
+-- =========================================================================
+-- This function inserts a newly created user account into the system.
+-- They sign up as a subscriber.
+-- =========================================================================
 
--- Have at least one Deletion.
+-- Validate that the email does not already exist
+SELECT COUNT(*) AS user_exists 
+FROM User 
+WHERE email = 'newuser@email.com';
 
--- Have at least one Modification.
+-- Insert the new user
+INSERT INTO User (email, first_name, middle_name, last_name, birth_date, sign_up_date)
+VALUES ('newuser@email.com', 'Jane', 'Marie', 'Doe', '1993-06-20', '2024-12-01');
 
--- Have at least one SQL query that is on a single.
+-- Insert phone number for the user
+INSERT INTO user2 (email, phone_number)
+VALUES ('newuser@email.com', 5556667777);
 
--- Have at least one SQL query that requires joining multiple tables.
+-- Insert into subscriber
+INSERT INTO subscriber (email)
+VALUES ('subscriber.new@email.com');
 
--- Have at least one SQL query that utilizes one or more aggregate operations
+-- Insert payment method
+INSERT INTO subscriber2 (email, payment_method)
+VALUES ('subscriber.new@email.com', 9876543210123456);
+
+-- Insert billing address
+INSERT INTO subscriber3 (email, street, city, "state", zip)
+VALUES ('subscriber.new@email.com', '100 Broadway', 'Nashville', 'Tennessee', 37201);
+
+-- Create subscription
+INSERT INTO subscription (sub_id, start_date, end_date, status)
+VALUES (6, '2025-12-01', '2026-12-01', 'active');
+
+-- Link subscriber to subscription
+INSERT INTO has (email, sub_id)
+VALUES ('subscriber.new@email.com', 6);
+
+-- Link subscription to plan
+INSERT INTO "to" (sub_id, plan_name)
+VALUES (6, 'Premium');
+
+-- Display confirmation
+SELECT 
+    u.email,
+    u.first_name,
+    u.last_name,
+    u.sign_up_date,
+    s.sub_id,
+    p.plan_name,
+    p.monthly_price,
+    sub.status
+FROM User u
+LEFT JOIN has h ON u.email = h.email
+LEFT JOIN subscription sub ON h.sub_id = sub.sub_id
+LEFT JOIN "to" t ON sub.sub_id = t.sub_id
+LEFT JOIN plan p ON t.plan_name = p.plan_name
+LEFT JOIN subscriber s ON u.email = s.email
+WHERE u.email = 'subscriber.new@email.com';
 
 
+-- =========================================================================
+-- FUNCTION #2: Search_movie_catalog (Query, joins multiple tables)
+-- =========================================================================
+-- This function searches the movie catalog using optional filters.
+-- =========================================================================
+SELECT 
+    m.movie_id,
+    m.title,
+    m.production_company,
+    m.length_of_movie,
+    m.release_year,
+    m.genre,
+    ROUND(AVG(r.stars), 1) AS average_stars,
+    COUNT(r.rating_id) AS review_count
+FROM movie m
+LEFT JOIN rating r ON m.movie_id = r.movie_id
+WHERE 
+    m.genre LIKE '%Sci-Fi%'                    
+    AND m.release_year >= 2000                   
+    AND m.release_year <= 2024      
+    AND m.length_of_movie <= 180                
+GROUP BY m.movie_id, m.title, m.production_company, m.length_of_movie, m.release_year, m.genre
+HAVING AVG(r.stars) >= 4.0                      
+ORDER BY m.title ASC;
 
 
+-- =========================================================================
+-- FUNCTION #3: Promote_to_Subscriber (Modification / Insertion)
+-- =========================================================================
+-- This function upgrades an existing user to a subscriber.
+-- =========================================================================
+
+-- Verify the email exists in User and plan exists in Plan
+SELECT u.email, p.plan_name
+FROM User u, plan p
+WHERE u.email = 'alex.brown@email.com' 
+  AND p.plan_name = 'Standard';
+
+-- Check if user is not already an active subscriber
+SELECT h.email
+FROM has h
+JOIN subscription s ON h.sub_id = s.sub_id
+WHERE h.email = 'alex.brown@email.com'
+  AND s.status = 'active'
+  AND s.end_date > DATE('now');
+
+-- Promote user to subscriber
+INSERT INTO subscriber (email)
+VALUES ('alex.brown@email.com');
+
+-- Insert payment method
+INSERT INTO subscriber2 (email, payment_method)
+VALUES ('alex.brown@email.com', 6789012345678901);
+
+-- Insert billing address
+INSERT INTO subscriber3 (email, street, city, "state", zip)
+VALUES ('alex.brown@email.com', '555 Park Avenue', 'Nashville', 'Tennessee', 37204);
+
+-- Generate new sub_id and create subscription
+INSERT INTO subscription (sub_id, start_date, end_date, status)
+VALUES (7, '2024-12-01', '2025-12-01', 'active');
+
+-- Link subscriber to subscription
+INSERT INTO has (email, sub_id)
+VALUES ('alex.brown@email.com', 7);
+
+-- Link subscription to plan
+INSERT INTO "to" (sub_id, plan_name)
+VALUES (7, 'Standard');
 
 
+-- =========================================================================
+-- FUNCTION #4: Remove_Movie (Deletion)
+-- =========================================================================
+-- This function removes a movie from the catalog.
+-- =========================================================================
+
+-- Verify the movie exists
+SELECT movie_id, title 
+FROM movie 
+WHERE movie_id = 4;
+
+-- Delete from rating2 first
+DELETE FROM rating2 
+WHERE movie_id = 4;
+
+-- Delete from rating
+DELETE FROM rating 
+WHERE movie_id = 4;
+
+-- Delete from watches
+DELETE FROM watches 
+WHERE movie_id = 4;
+
+-- Delete from movie
+DELETE FROM movie 
+WHERE movie_id = 4;
+
+-- =========================================================================
+-- FUNCTION #5: Update_User_Info (Modification)
+-- =========================================================================
+-- This function updates a user's profile information.
+-- =========================================================================
+
+-- Verify user exists
+SELECT email, first_name, middle_name, last_name, birth_date
+FROM User
+WHERE email = 'john.smith@email.com';
+
+-- Update user information
+UPDATE User
+SET 
+    first_name = 'Jonathan',
+    middle_name = 'Robert',
+    birth_date = '1990-05-16'
+WHERE email = 'john.smith@email.com';
+
+-- Display updated user information for confirmation
+SELECT 
+    email,
+    first_name,
+    middle_name,
+    last_name,
+    birth_date,
+    sign_up_date
+FROM User
+WHERE email = 'john.smith@email.com';
 
 
+-- =========================================================================
+-- FUNCTION #6: High_Rated_Movies (Aggregation, joins multiple tables)
+-- =========================================================================
+-- This function lists all movies with an average rating of 4.0 or more stars.
+-- =========================================================================
+
+SELECT 
+    m.movie_id,
+    m.title,
+    m.genre,
+    m.release_year,
+    ROUND(AVG(r.stars), 1) AS average_rating,
+    COUNT(r.rating_id) AS total_ratings
+FROM movie m
+JOIN rating r ON m.movie_id = r.movie_id
+GROUP BY m.movie_id, m.title, m.genre, m.release_year
+HAVING AVG(r.stars) >= 4.0
+ORDER BY average_rating DESC, m.title ASC;
 
 
+-- =========================================================================
+-- FUNCTION #7: Total_Movies_Watched_By_User (Aggregation, joins multiple tables)
+-- =========================================================================
+-- This function calculates the total number of movies each user has watched.
+-- =========================================================================
+
+SELECT 
+    u.email,
+    u.first_name,
+    u.last_name,
+    COUNT(w.movie_id) AS total_movies_watched
+FROM User u
+LEFT JOIN watches w ON u.email = w.email
+GROUP BY u.email, u.first_name, u.last_name
+ORDER BY total_movies_watched DESC, u.email ASC;
 
 
+-- =========================================================================
+-- FUNCTION #8: Most_Popular_Plan (Aggregation, joins multiple tables)
+-- =========================================================================
+-- This function finds the subscription plan with the highest number of subscribers.
+-- =========================================================================
 
+SELECT 
+    p.plan_name,
+    p.monthly_price,
+    p.max_screens,
+    COUNT(t.sub_id) AS total_subscriptions
+FROM plan p
+LEFT JOIN "to" t ON p.plan_name = t.plan_name
+GROUP BY p.plan_name, p.monthly_price, p.max_screens
+ORDER BY total_subscriptions DESC
+LIMIT 1;
+
+
+-- =========================================================================
+-- FUNCTION #9: Find_Longest_Movie (Aggregation, single table query)
+-- =========================================================================
+-- This function finds the movie with the greatest length.
+-- =========================================================================
+
+SELECT 
+    movie_id,
+    title,
+    length_of_movie,
+    genre,
+    release_year,
+    production_company
+FROM movie
+WHERE length_of_movie = (SELECT MAX(length_of_movie) FROM movie);
+
+
+-- =========================================================================
+-- FUNCTION #10: View_watch_history (Query, joins multiple tables)
+-- =========================================================================
+-- This function displays a user's watch history with movie details and ratings.
+-- =========================================================================
+SELECT 
+    w.email,
+    w.movie_id,
+    m.title,
+    m.production_company,
+    m.length_of_movie,
+    m.release_year,
+    m.genre,
+    ROUND(AVG(r.stars), 1) AS average_stars,
+    COUNT(r.rating_id) AS total_ratings
+FROM watches w
+JOIN User u ON w.email = u.email
+JOIN movie m ON w.movie_id = m.movie_id
+LEFT JOIN rating r ON m.movie_id = r.movie_id
+WHERE 
+    w.email = 'john.smith@email.com'           
+    AND m.genre = '%Sci-Fi%'                 
+GROUP BY w.email, w.movie_id, m.title, m.production_company, m.length_of_movie, m.release_year, m.genre
+HAVING AVG(r.stars) >= 4.0                      
+ORDER BY m.title ASC;
+
+-- =========================================================================
+-- FUNCTION #11: Average_Plan_Price (Aggregation, single table query)
+-- =========================================================================
+-- This function calculates the average monthly price across all subscription plans.
+-- =========================================================================
+SELECT 
+    ROUND(AVG(monthly_price), 2) AS average_monthly_plan_price,
+    COUNT(*) AS total_plans,
+    MIN(monthly_price) AS cheapest_plan,
+    MAX(monthly_price) AS most_expensive_plan
+FROM plan;

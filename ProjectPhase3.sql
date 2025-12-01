@@ -248,8 +248,6 @@ INSERT INTO watches (email, movie_id) VALUES
 ('emma.davis@email.com', 5),
 ('alex.brown@email.com', 1);
 
-
-
 ------------- 
 -- Functions
 ------------- 
@@ -326,6 +324,8 @@ WHERE u.email = 'newuser@email.com'
 -- FUNCTION #2: Search_movie_catalog (Query, joins multiple tables)
 -- =========================================================================
 -- This function searches the movie catalog using filters.
+-- The specific query searches for Sci-Fi movie's released between 2000-2024, 
+-- that are 180 mins long or shorter, and are rated 4 stars or above
 -- =========================================================================
 SELECT 
     m.movie_id,
@@ -335,18 +335,23 @@ SELECT
     m.release_year,
     m.genre,
     ROUND(AVG(r.stars), 1) AS average_stars,
-    COUNT(r.rating_id) AS review_count
-FROM movie m
-LEFT JOIN rating r ON m.movie_id = r.movie_id
-WHERE 
-    m.genre = 'Sci-Fi'                    
-    AND m.release_year >= 2000                   
-    AND m.release_year <= 2024      
-    AND m.length_of_movie <= 180                
-GROUP BY m.movie_id, m.title, m.production_company, m.length_of_movie, m.release_year, m.genre
-HAVING AVG(r.stars) >= 4.0                      
-ORDER BY m.title ASC;
-
+    COUNT(r.rating_id)      AS review_count
+FROM movie  m,
+     rating r
+WHERE m.movie_id = r.movie_id -- join condition
+  -- User filters 
+  AND m.genre = 'Sci-Fi'       
+  AND m.release_year BETWEEN 2000 AND 2024
+  AND m.length_of_movie <= 180
+GROUP BY
+    m.movie_id,
+    m.title,
+    m.production_company,
+    m.length_of_movie,
+    m.release_year,
+    m.genre
+HAVING AVG(r.stars) >= 4.0 -- aggregate condition
+ORDER BY m.title ASC; 
 
 -- =========================================================================
 -- FUNCTION #3: Promote_to_Subscriber (Modification / Insertion)

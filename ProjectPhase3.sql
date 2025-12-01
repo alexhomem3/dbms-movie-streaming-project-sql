@@ -304,7 +304,6 @@ SELECT
     u.first,
     u.last,
     u.sign_up_date,
-    s.email AS subscriber_email,
     h.sub_id,
     sub.status,
     p.plan_name,

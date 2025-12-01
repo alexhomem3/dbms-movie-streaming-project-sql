@@ -305,7 +305,7 @@ function loadRatings() {
                 <td>${rating.reviewText ? rating.reviewText.substring(0, 50) + '...' : 'No review'}</td>
                 <td>${formatDate(rating.ratingDate)}</td>
                 <td class="table-actions">
-                    <button class="btn btn-sm btn-outline-primary" onclick="viewRating(${rating.id})">
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewRating(${rating.movieId}, ${rating.ratingId})">
                         <i class="fas fa-eye"></i>
                     </button>
                 </td>
@@ -573,22 +573,86 @@ function rateMovie(movieId) {
 }
 
 /**
+ * Show add user form
+ */
+function showAddUserForm() {
+    const email = prompt('Enter email:');
+    if (!email) return;
+    
+    const firstName = prompt('Enter first name:');
+    if (!firstName) return;
+    
+    const lastName = prompt('Enter last name:');
+    if (!lastName) return;
+    
+    const middleName = prompt('Enter middle name (optional):') || null;
+    const birthDate = prompt('Enter birth date (YYYY-MM-DD):') || null;
+    const userType = confirm('Is this a subscriber? (OK for subscriber, Cancel for free user)') ? 'subscriber' : 'free_user';
+    
+    const newUser = {
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
+        middleName: middleName,
+        birthDate: birthDate,
+        signUpDate: new Date().toISOString().split('T')[0],
+        userType: userType,
+        status: 'active',
+        phoneNumbers: []
+    };
+    
+    if (userType === 'free_user') {
+        const trialEnd = prompt('Enter trial end date (YYYY-MM-DD):');
+        if (trialEnd) {
+            newUser.trialEndDate = trialEnd;
+        }
+    }
+    
+    sampleData.users.push(newUser);
+    loadUsers();
+    loadHomeData();
+    showNotification('User added successfully!', 'success');
+}
+
+/**
  * Edit user
  */
-function editUser(userId) {
-    const user = sampleData.users.find(u => u.id === userId);
+function editUser(userEmail) {
+    const user = sampleData.users.find(u => u.email === userEmail);
     if (user) {
-        alert(`Edit User: ${user.firstName} ${user.lastName}\n\nThis would open an edit form in a real application.`);
+        const newFirstName = prompt(`Edit first name (current: ${user.firstName}):`, user.firstName);
+        if (newFirstName && newFirstName !== user.firstName) {
+            user.firstName = newFirstName;
+        }
+        
+        const newLastName = prompt(`Edit last name (current: ${user.lastName}):`, user.lastName);
+        if (newLastName && newLastName !== user.lastName) {
+            user.lastName = newLastName;
+        }
+        
+        const newBirthDate = prompt(`Edit birth date (current: ${user.birthDate}):`, user.birthDate);
+        if (newBirthDate && newBirthDate !== user.birthDate) {
+            user.birthDate = newBirthDate;
+        }
+        
+        loadUsers();
+        showNotification('User updated successfully!', 'success');
     }
 }
 
 /**
  * Delete user
  */
-function deleteUser(userId) {
+function deleteUser(userEmail) {
     if (confirm('Are you sure you want to delete this user?')) {
-        sampleData.users = sampleData.users.filter(u => u.id !== userId);
+        sampleData.users = sampleData.users.filter(u => u.email !== userEmail);
+        // Also remove related subscriptions
+        sampleData.subscriptions = sampleData.subscriptions.filter(s => s.userEmail !== userEmail);
+        // Also remove related ratings
+        sampleData.ratings = sampleData.ratings.filter(r => r.userEmail !== userEmail);
         loadUsers();
+        loadSubscriptions();
+        loadRatings();
         loadHomeData();
         showNotification('User deleted successfully!', 'info');
     }
@@ -607,11 +671,11 @@ function viewSubscription(subscriptionId) {
 /**
  * View rating
  */
-function viewRating(ratingId) {
-    const rating = sampleData.ratings.find(r => r.id === ratingId);
+function viewRating(movieId, ratingId) {
+    const rating = sampleData.ratings.find(r => r.movieId === movieId && r.ratingId === ratingId);
     if (rating) {
         const movie = sampleData.movies.find(m => m.id === rating.movieId);
-        const user = sampleData.users.find(u => u.id === rating.userId);
+        const user = sampleData.users.find(u => u.email === rating.userEmail);
         
         alert(`Rating Details:\n\nMovie: ${movie ? movie.title : 'N/A'}\nUser: ${user ? `${user.firstName} ${user.lastName}` : 'N/A'}\nRating: ${rating.stars}/5\nReview: ${rating.reviewText || 'No review'}\nDate: ${formatDate(rating.ratingDate)}`);
     }

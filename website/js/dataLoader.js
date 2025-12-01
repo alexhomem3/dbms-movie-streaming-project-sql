@@ -30,28 +30,13 @@ async function fetchSQLData() {
  */
 async function fetchLocalSQLData() {
     try {
-        // Try different possible paths
-        const paths = [
-            '../dbms-movie-streaming-project-sql/ProjectPhase3.sql',
-            '../ProjectPhase3.sql',
-            '../../dbms-movie-streaming-project-sql/ProjectPhase3.sql'
-        ];
-        
-        for (const path of paths) {
-            try {
-                const response = await fetch(path);
-                if (response.ok) {
-                    const sqlText = await response.text();
-                    console.log('Successfully loaded SQL from:', path);
-                    return parseSQLData(sqlText);
-                }
-            } catch (e) {
-                // Try next path
-                continue;
-            }
+        const response = await fetch('../dbms-movie-streaming-project-sql/ProjectPhase3.sql');
+        if (!response.ok) {
+            throw new Error('Local ProjectPhase3.sql not found');
         }
-        console.error('Could not find SQL file at any of the attempted paths');
-        return null;
+        const sqlText = await response.text();
+        console.log('Successfully loaded SQL from ProjectPhase3.sql');
+        return parseSQLData(sqlText);
     } catch (error) {
         console.error('Error fetching local SQL data:', error);
         return null;

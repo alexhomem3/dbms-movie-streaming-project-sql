@@ -368,10 +368,14 @@ WHERE u.email = 'alex.brown@email.com'
 -- Check if user is not already an active subscriber
 SELECT h.email
 FROM has h
-JOIN subscription s ON h.sub_id = s.sub_id
 WHERE h.email = 'alex.brown@email.com'
-  AND s.status = 'active'
-  AND s.end_date > DATE('now');
+  AND EXISTS (
+        SELECT 1
+        FROM subscription s
+        WHERE s.sub_id = h.sub_id
+          AND s.status = 'active'
+          AND s.end_date > DATE('now')
+  );
 
 -- Promote user to subscriber
 INSERT INTO subscriber (email)

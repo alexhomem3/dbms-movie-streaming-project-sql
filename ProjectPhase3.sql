@@ -304,23 +304,29 @@ SELECT
     u.first_name,
     u.last_name,
     u.sign_up_date,
-    s.sub_id,
+    s.email AS subscriber_email,
+    h.sub_id,
+    sub.status,
     p.plan_name,
-    p.monthly_price,
-    sub.status
-FROM User u
-LEFT JOIN has h ON u.email = h.email
-LEFT JOIN subscription sub ON h.sub_id = sub.sub_id
-LEFT JOIN "to" t ON sub.sub_id = t.sub_id
-LEFT JOIN plan p ON t.plan_name = p.plan_name
-LEFT JOIN subscriber s ON u.email = s.email
-WHERE u.email = 'newuser@email.com';
+    p.monthly_price
+FROM User u,
+    has h,
+    subscription sub,
+    "to" t,
+    plan p,
+    subscriber s
+WHERE u.email = 'newuser@email.com'
+    AND h.email = s.email
+    AND s.email = u.email
+    AND t.sub_id = sub.sub_id
+    AND sub.sub_id = h.sub_id
+    AND t.plan_name = p.plan_name;
 
 
 -- =========================================================================
 -- FUNCTION #2: Search_movie_catalog (Query, joins multiple tables)
 -- =========================================================================
--- This function searches the movie catalog using optional filters.
+-- This function searches the movie catalog using filters.
 -- =========================================================================
 SELECT 
     m.movie_id,

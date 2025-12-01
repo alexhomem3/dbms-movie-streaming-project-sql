@@ -486,14 +486,16 @@ ORDER BY average_rating DESC, m.title ASC;
 -- This function calculates the total number of movies each user has watched.
 -- =========================================================================
 
-SELECT 
+SELECT
     u.email,
     u.first,
     u.last,
-    COUNT(w.movie_id) AS total_movies_watched
+    (
+        SELECT COUNT(*)
+        FROM watches w
+        WHERE w.email = u.email
+    ) AS total_movies_watched
 FROM User u
-LEFT JOIN watches w ON u.email = w.email
-GROUP BY u.email, u.first, u.last
 ORDER BY total_movies_watched DESC, u.email ASC;
 
 

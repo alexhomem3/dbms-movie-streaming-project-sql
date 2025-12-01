@@ -407,35 +407,7 @@ VALUES (7, 'Standard');
 
 
 -- =========================================================================
--- FUNCTION #4: Remove_Movie (Deletion)
--- =========================================================================
--- This function removes a movie from the catalog.
--- =========================================================================
-
--- TODO: This should be last
--- Verify the movie exists
-SELECT movie_id, title 
-FROM movie 
-WHERE movie_id = 4;
-
--- Delete from rating2 first
-DELETE FROM rating2 
-WHERE movie_id = 4;
-
--- Delete from rating
-DELETE FROM rating 
-WHERE movie_id = 4;
-
--- Delete from watches
-DELETE FROM watches 
-WHERE movie_id = 4;
-
--- Delete from movie
-DELETE FROM movie 
-WHERE movie_id = 4;
-
--- =========================================================================
--- FUNCTION #5: Update_User_Info (Modification)
+-- FUNCTION #4: Update_User_Info (Modification)
 -- =========================================================================
 -- This function updates a user's profile information.
 -- =========================================================================
@@ -466,7 +438,7 @@ WHERE email = 'john.smith@email.com';
 
 
 -- =========================================================================
--- FUNCTION #6: High_Rated_Movies (Aggregation, joins multiple tables)
+-- FUNCTION #5: High_Rated_Movies (Aggregation, joins multiple tables)
 -- =========================================================================
 -- This function lists all movies with an average rating of 4.0 or more stars.
 -- =========================================================================
@@ -485,7 +457,7 @@ ORDER BY average_rating DESC, m.title ASC;
 
 
 -- =========================================================================
--- FUNCTION #7: Total_Movies_Watched_By_User (Aggregation, joins multiple tables)
+-- FUNCTION #6: Total_Movies_Watched_By_User (Aggregation, joins multiple tables)
 -- =========================================================================
 -- This function calculates the total number of movies each user has watched.
 -- =========================================================================
@@ -504,7 +476,7 @@ ORDER BY total_movies_watched DESC, u.email ASC;
 
 
 -- =========================================================================
--- FUNCTION #8: Most_Popular_Plan (Aggregation, joins multiple tables)
+-- FUNCTION #7: Most_Popular_Plan (Aggregation, joins multiple tables)
 -- =========================================================================
 -- This function finds the subscription plan with the highest number of subscribers.
 -- =========================================================================
@@ -521,7 +493,7 @@ LIMIT 1;
 
 
 -- =========================================================================
--- FUNCTION #9: Find_Longest_Movie (Aggregation, single table query)
+-- FUNCTION #8: Find_Longest_Movie (Aggregation, single table query)
 -- =========================================================================
 -- This function finds the movie with the greatest length.
 -- =========================================================================
@@ -534,7 +506,7 @@ WHERE length_of_movie = (SELECT MAX(length_of_movie) FROM movie);
 
 
 -- =========================================================================
--- FUNCTION #10: View_watch_history (Query, joins multiple tables)
+-- FUNCTION #9: View_watch_history (Query, joins multiple tables)
 -- =========================================================================
 -- This function displays a user's watch history.
 -- =========================================================================
@@ -543,3 +515,30 @@ SELECT
 FROM watches w, movie m
 WHERE w.email = 'john.smith@email.com' AND w.movie_id = m.movie_id
 ORDER BY m.title ASC;
+
+-- =========================================================================
+-- FUNCTION #10 Remove_Movie (Deletion)
+-- =========================================================================
+-- This function removes a movie from the catalog.
+-- =========================================================================
+
+-- Verify the movie exists
+SELECT movie_id, title 
+FROM movie 
+WHERE movie_id = 4;
+
+-- Delete from rating2 first
+DELETE FROM rating2 
+WHERE movie_id = 4;
+
+-- Delete from rating
+DELETE FROM rating 
+WHERE movie_id = 4;
+
+-- Delete from watches
+DELETE FROM watches 
+WHERE movie_id = 4;
+
+-- Delete from movie
+DELETE FROM movie 
+WHERE movie_id = 4;

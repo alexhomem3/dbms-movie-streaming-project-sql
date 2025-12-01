@@ -334,7 +334,7 @@ SELECT
 FROM movie m
 LEFT JOIN rating r ON m.movie_id = r.movie_id
 WHERE 
-    m.genre LIKE '%Sci-Fi%'                    
+    m.genre = 'Sci-Fi'                    
     AND m.release_year >= 2000                   
     AND m.release_year <= 2024      
     AND m.length_of_movie <= 180                
@@ -539,7 +539,7 @@ JOIN movie m ON w.movie_id = m.movie_id
 LEFT JOIN rating r ON m.movie_id = r.movie_id
 WHERE 
     w.email = 'john.smith@email.com'           
-    AND m.genre = '%Sci-Fi%'                 
+    AND m.genre = 'Sci-Fi'                 
 GROUP BY w.email, w.movie_id, m.title, m.production_company, m.length_of_movie, m.release_year, m.genre
 HAVING AVG(r.stars) >= 4.0                      
 ORDER BY m.title ASC;

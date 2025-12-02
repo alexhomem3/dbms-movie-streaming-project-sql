@@ -425,7 +425,8 @@ function convertToAppFormat(sqlData) {
         movies: movies,
         subscriptions: subscriptions,
         ratings: ratings,
-        plans: sqlData.plans
+        plans: sqlData.plans,
+        watches: sqlData.watches || []
     };
 }
 
@@ -447,6 +448,7 @@ async function initializeDataFromSQL() {
                 sampleData.subscriptions = appData.subscriptions || [];
                 sampleData.ratings = appData.ratings || [];
                 sampleData.plans = appData.plans || [];
+                sampleData.watches = appData.watches || [];
                 // Update filteredMovies
                 if (typeof filteredMovies !== 'undefined') {
                     filteredMovies = [...sampleData.movies];

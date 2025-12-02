@@ -3,7 +3,6 @@
 ## Run the Application
 
 ```bash
-cd website
 python3 -m http.server 8000
 ```
 

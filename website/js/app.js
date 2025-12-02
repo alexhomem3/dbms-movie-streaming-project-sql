@@ -5,7 +5,7 @@
 
 // Data will be loaded from SQL file via dataLoader.js
 // This is just an empty structure that gets populated from the SQL data
-const sampleData = {
+let sampleData = {
     movies: [],
     users: [],
     subscriptions: [],
@@ -16,7 +16,14 @@ const sampleData = {
 
 // Global variables
 let currentSection = 'home';
-let filteredMovies = [...sampleData.movies];
+let filteredMovies = [];
+
+// Cache keys
+const CACHE_KEYS = {
+    DATA: 'streamflix_data',
+    UI_STATE: 'streamflix_ui_state',
+    FILTERED_MOVIES: 'streamflix_filtered_movies'
+};
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -24,16 +31,86 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
+ * Save data to localStorage
+ */
+function saveCache() {
+    try {
+        localStorage.setItem(CACHE_KEYS.DATA, JSON.stringify(sampleData));
+        localStorage.setItem(CACHE_KEYS.UI_STATE, JSON.stringify({
+            currentSection: currentSection
+        }));
+        localStorage.setItem(CACHE_KEYS.FILTERED_MOVIES, JSON.stringify(filteredMovies));
+        console.log('Data cached successfully');
+    } catch (error) {
+        console.error('Error saving cache:', error);
+    }
+}
+
+/**
+ * Load data from localStorage
+ */
+function loadCache() {
+    try {
+        const cachedData = localStorage.getItem(CACHE_KEYS.DATA);
+        const cachedUIState = localStorage.getItem(CACHE_KEYS.UI_STATE);
+        const cachedFilteredMovies = localStorage.getItem(CACHE_KEYS.FILTERED_MOVIES);
+        
+        if (cachedData) {
+            sampleData = JSON.parse(cachedData);
+            console.log('Data loaded from cache');
+        }
+        
+        if (cachedUIState) {
+            const uiState = JSON.parse(cachedUIState);
+            currentSection = uiState.currentSection || 'home';
+        }
+        
+        if (cachedFilteredMovies) {
+            filteredMovies = JSON.parse(cachedFilteredMovies);
+        } else {
+            filteredMovies = [...sampleData.movies];
+        }
+        
+        return cachedData !== null;
+    } catch (error) {
+        console.error('Error loading cache:', error);
+        return false;
+    }
+}
+
+/**
+ * Clear cache (useful for resetting to SQL data)
+ */
+function clearCache() {
+    localStorage.removeItem(CACHE_KEYS.DATA);
+    localStorage.removeItem(CACHE_KEYS.UI_STATE);
+    localStorage.removeItem(CACHE_KEYS.FILTERED_MOVIES);
+    console.log('Cache cleared');
+}
+
+/**
  * Initialize the application
  */
 async function initializeApp() {
-    // Try to load data from SQL first
-    const loaded = await initializeDataFromSQL();
-    if (!loaded) {
-        console.warn('Could not load data from SQL, using default sample data');
-    } else {
-        // Update filteredMovies after data loads
-        filteredMovies = [...sampleData.movies];
+    // First, try to load from cache
+    const cacheLoaded = loadCache();
+    
+    if (!cacheLoaded) {
+        // If no cache, try to load data from SQL
+        const loaded = await initializeDataFromSQL();
+        if (!loaded) {
+            console.warn('Could not load data from SQL, using default sample data');
+        } else {
+            // Update filteredMovies after data loads
+            filteredMovies = [...sampleData.movies];
+        }
+        // Save initial data to cache
+        saveCache();
+    }
+    
+    // Restore UI state
+    if (currentSection) {
+        showSection(currentSection);
     }
     
     // Load all UI components
@@ -77,6 +154,8 @@ function showSection(sectionName) {
     if (targetSection) {
         targetSection.style.display = 'block';
         currentSection = sectionName;
+        // Save UI state to cache
+        saveCache();
     }
 
     // Update navigation
@@ -215,16 +294,12 @@ function loadUsers() {
     if (!container) return;
 
     container.innerHTML = sampleData.users.map(user => {
-        // Count movies watched by this user
-        const moviesWatched = sampleData.watches.filter(w => w.email === user.email).length;
-        
         return `
         <tr>
             <td>${user.firstName} ${user.lastName}</td>
             <td>${user.email}</td>
             <td>${user.birthDate}</td>
             <td>${formatDate(user.signUpDate)}</td>
-            <td><span class="badge bg-info">${moviesWatched}</span></td>
             <td><span class="badge bg-${getUserTypeColor(user.userType)}">${user.userType}</span></td>
             <td><span class="badge bg-success">${user.status}</span></td>
             <td class="table-actions">
@@ -510,6 +585,9 @@ function filterMovies(criteria) {
         return true;
     });
 
+    // Save filteredMovies to cache
+    saveCache();
+    
     loadMovies();
 }
 
@@ -524,6 +602,10 @@ function clearMovieSearch() {
     document.getElementById('search-rating').value = '';
     
     filteredMovies = [...sampleData.movies];
+    
+    // Save filteredMovies to cache
+    saveCache();
+    
     loadMovies();
 }
 
@@ -741,6 +823,9 @@ function submitRating() {
         movie.totalRatings = movieRatings.length;
     }
     
+    // Save to cache
+    saveCache();
+    
     // Close modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('addRatingModal'));
     modal.hide();
@@ -880,6 +965,9 @@ function submitSubscriberForm() {
     
     sampleData.subscriptions.push(newSubscription);
     
+    // Save to cache
+    saveCache();
+    
     // Close modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('addSubscriberModal'));
     modal.hide();
@@ -939,6 +1027,10 @@ function addFreeUser() {
     }
     
     sampleData.users.push(newUser);
+    
+    // Save to cache
+    saveCache();
+    
     loadUsers();
     loadHomeData();
     showNotification('Free user added successfully!', 'success');
@@ -1110,6 +1202,9 @@ function submitEditUserForm() {
         user.trialEndDate = document.getElementById('edit-trial-end').value || null;
     }
     
+    // Save to cache
+    saveCache();
+    
     // Close modal
     const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
     modal.hide();
@@ -1212,6 +1307,10 @@ function deleteUser(userEmail) {
         sampleData.subscriptions = sampleData.subscriptions.filter(s => s.userEmail !== userEmail);
         // Also remove related ratings
         sampleData.ratings = sampleData.ratings.filter(r => r.userEmail !== userEmail);
+        
+        // Save to cache
+        saveCache();
+        
         loadUsers();
         loadSubscriptions();
         loadHomeData();
@@ -1255,6 +1354,9 @@ function deleteMovie(movieId) {
     // Update filteredMovies to reflect the deletion
     filteredMovies = [...sampleData.movies];
     
+    // Save to cache
+    saveCache();
+    
     // Update UI
     loadMovies();
     loadHomeData();
@@ -1284,8 +1386,10 @@ function viewWatchHistory(userEmail) {
     
     const modal = new bootstrap.Modal(document.getElementById('watchHistoryModal'));
     
-    // Set user name
-    document.getElementById('watch-history-user-name').textContent = `Movies watched by ${user.firstName} ${user.lastName}`;
+    // Set user name with count
+    const moviesCount = watchedMovies.length;
+    document.getElementById('watch-history-user-name').textContent = 
+        `Movies watched by ${user.firstName} ${user.lastName} (${moviesCount} ${moviesCount === 1 ? 'movie' : 'movies'})`;
     
     // Display watch history
     const historyList = document.getElementById('watch-history-list');

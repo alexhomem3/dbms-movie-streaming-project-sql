@@ -53,6 +53,11 @@
                             <i class="fas fa-chart-bar me-1"></i>Analytics
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#tables" onclick="showSection('tables')">
+                            <i class="fas fa-database me-1"></i>Tables
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -467,6 +472,213 @@
                             <div class="card-body p-4">
                                 <div id="top-movie-display">
                                     <!-- Top movie will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tables Section -->
+        <div id="tables-section" class="content-section" style="display: none;">
+            <div class="container">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h3><i class="fas fa-database me-2"></i>Database Tables</h3>
+                        <p class="text-muted">View all database tables - updates in real-time as you make changes</p>
+                    </div>
+                </div>
+
+                <!-- Table Selection Tabs -->
+                <ul class="nav nav-tabs mb-3" id="tableTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="users-tab-btn" data-bs-toggle="tab" data-bs-target="#users-tab" type="button" role="tab">
+                            <i class="fas fa-users me-1"></i>User <span class="badge bg-primary" id="user-count-badge">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="movies-tab-btn" data-bs-toggle="tab" data-bs-target="#movies-tab" type="button" role="tab">
+                            <i class="fas fa-film me-1"></i>Movie <span class="badge bg-primary" id="movie-count-badge">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="subscriptions-tab-btn" data-bs-toggle="tab" data-bs-target="#subscriptions-tab" type="button" role="tab">
+                            <i class="fas fa-credit-card me-1"></i>Subscription <span class="badge bg-primary" id="subscription-count-badge">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ratings-tab-btn" data-bs-toggle="tab" data-bs-target="#ratings-tab" type="button" role="tab">
+                            <i class="fas fa-star me-1"></i>Rating <span class="badge bg-primary" id="rating-count-badge">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="plans-tab-btn" data-bs-toggle="tab" data-bs-target="#plans-tab" type="button" role="tab">
+                            <i class="fas fa-tags me-1"></i>Plan <span class="badge bg-primary" id="plan-count-badge">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="watches-tab-btn" data-bs-toggle="tab" data-bs-target="#watches-tab" type="button" role="tab">
+                            <i class="fas fa-eye me-1"></i>Watches <span class="badge bg-primary" id="watches-count-badge">0</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="tableTabsContent">
+                    <!-- Users Table -->
+                    <div class="tab-pane fade show active" id="users-tab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-users me-2"></i>User Table</span>
+                                <span class="badge bg-secondary" id="user-table-count">0 rows</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>email (PK)</th>
+                                                <th>first</th>
+                                                <th>middle</th>
+                                                <th>last</th>
+                                                <th>birth_date</th>
+                                                <th>sign_up_date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="db-users-table">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Movies Table -->
+                    <div class="tab-pane fade" id="movies-tab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-film me-2"></i>Movie Table</span>
+                                <span class="badge bg-secondary" id="movie-table-count">0 rows</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>movie_id (PK)</th>
+                                                <th>title</th>
+                                                <th>production_company</th>
+                                                <th>length</th>
+                                                <th>release_year</th>
+                                                <th>genre</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="db-movies-table">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subscriptions Table -->
+                    <div class="tab-pane fade" id="subscriptions-tab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-credit-card me-2"></i>Subscription Table</span>
+                                <span class="badge bg-secondary" id="subscription-table-count">0 rows</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>sub_id (PK)</th>
+                                                <th>start_date</th>
+                                                <th>end_date</th>
+                                                <th>status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="db-subscriptions-table">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ratings Table -->
+                    <div class="tab-pane fade" id="ratings-tab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-star me-2"></i>Rating Table</span>
+                                <span class="badge bg-secondary" id="rating-table-count">0 rows</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>movie_id (PK/FK)</th>
+                                                <th>rating_id (PK)</th>
+                                                <th>user_email (FK)</th>
+                                                <th>stars</th>
+                                                <th>date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="db-ratings-table">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Plans Table -->
+                    <div class="tab-pane fade" id="plans-tab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-tags me-2"></i>Plan Table</span>
+                                <span class="badge bg-secondary" id="plan-table-count">0 rows</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>plan_name (PK)</th>
+                                                <th>max_screens</th>
+                                                <th>monthly_price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="db-plans-table">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Watches Table -->
+                    <div class="tab-pane fade" id="watches-tab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-eye me-2"></i>Watches Table</span>
+                                <span class="badge bg-secondary" id="watches-table-count">0 rows</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>movie_id (PK/FK)</th>
+                                                <th>email (PK/FK)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="db-watches-table">
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>

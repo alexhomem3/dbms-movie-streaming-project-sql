@@ -183,6 +183,9 @@ function showSection(sectionName) {
         case 'reports':
             loadReports();
             break;
+        case 'tables':
+            loadDatabaseTables();
+            break;
     }
 }
 
@@ -832,8 +835,9 @@ function submitRating() {
     
     // Refresh displays
     loadMovies();
-            showNotification('Rating submitted successfully!', 'success');
-        }
+    refreshDatabaseTables();
+    showNotification('Rating submitted successfully!', 'success');
+}
 
 /**
  * Show add user form
@@ -976,6 +980,7 @@ function submitSubscriberForm() {
     loadUsers();
     loadSubscriptions();
     loadHomeData();
+    refreshDatabaseTables();
     showNotification('Subscriber added successfully!', 'success');
 }
 
@@ -1033,6 +1038,7 @@ function addFreeUser() {
     
     loadUsers();
     loadHomeData();
+    refreshDatabaseTables();
     showNotification('Free user added successfully!', 'success');
 }
 
@@ -1213,6 +1219,7 @@ function submitEditUserForm() {
     loadUsers();
     loadSubscriptions();
     loadHomeData();
+    refreshDatabaseTables();
     showNotification('User updated successfully!', 'success');
 }
 
@@ -1314,6 +1321,7 @@ function deleteUser(userEmail) {
         loadUsers();
         loadSubscriptions();
         loadHomeData();
+        refreshDatabaseTables();
         showNotification('User deleted successfully!', 'info');
     }
 }
@@ -1361,6 +1369,7 @@ function deleteMovie(movieId) {
     loadMovies();
     loadHomeData();
     loadReports();
+    refreshDatabaseTables();
     
     showNotification(
         `Movie "${movieTitle}" deleted successfully!\nRemoved ${ratingsCount} rating(s) and ${watchesCount} watch record(s).`, 
@@ -1553,4 +1562,149 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+/**
+ * Load all database tables for the Tables section
+ */
+function loadDatabaseTables() {
+    loadDbUsersTable();
+    loadDbMoviesTable();
+    loadDbSubscriptionsTable();
+    loadDbRatingsTable();
+    loadDbPlansTable();
+    loadDbWatchesTable();
+    updateTableBadges();
+}
+
+/**
+ * Update table count badges
+ */
+function updateTableBadges() {
+    document.getElementById('user-count-badge').textContent = sampleData.users.length;
+    document.getElementById('movie-count-badge').textContent = sampleData.movies.length;
+    document.getElementById('subscription-count-badge').textContent = sampleData.subscriptions.length;
+    document.getElementById('rating-count-badge').textContent = sampleData.ratings.length;
+    document.getElementById('plan-count-badge').textContent = sampleData.plans.length;
+    document.getElementById('watches-count-badge').textContent = sampleData.watches.length;
+    
+    document.getElementById('user-table-count').textContent = `${sampleData.users.length} rows`;
+    document.getElementById('movie-table-count').textContent = `${sampleData.movies.length} rows`;
+    document.getElementById('subscription-table-count').textContent = `${sampleData.subscriptions.length} rows`;
+    document.getElementById('rating-table-count').textContent = `${sampleData.ratings.length} rows`;
+    document.getElementById('plan-table-count').textContent = `${sampleData.plans.length} rows`;
+    document.getElementById('watches-table-count').textContent = `${sampleData.watches.length} rows`;
+}
+
+/**
+ * Load Users table (database view)
+ */
+function loadDbUsersTable() {
+    const container = document.getElementById('db-users-table');
+    if (!container) return;
+
+    container.innerHTML = sampleData.users.map(user => `
+        <tr>
+            <td><code>${user.email}</code></td>
+            <td>${user.firstName}</td>
+            <td>${user.middleName || '<span class="text-muted">NULL</span>'}</td>
+            <td>${user.lastName}</td>
+            <td>${user.birthDate || '<span class="text-muted">NULL</span>'}</td>
+            <td>${user.signUpDate}</td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * Load Movies table (database view)
+ */
+function loadDbMoviesTable() {
+    const container = document.getElementById('db-movies-table');
+    if (!container) return;
+
+    container.innerHTML = sampleData.movies.map(movie => `
+        <tr>
+            <td><code>${movie.id}</code></td>
+            <td>${movie.title}</td>
+            <td>${movie.productionCompany}</td>
+            <td>${movie.length}</td>
+            <td>${movie.releaseYear}</td>
+            <td>${movie.genre}</td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * Load Subscriptions table (database view)
+ */
+function loadDbSubscriptionsTable() {
+    const container = document.getElementById('db-subscriptions-table');
+    if (!container) return;
+
+    container.innerHTML = sampleData.subscriptions.map(sub => `
+        <tr>
+            <td><code>${sub.id}</code></td>
+            <td>${sub.startDate}</td>
+            <td>${sub.endDate}</td>
+            <td><span class="badge bg-${getStatusColor(sub.status)}">${sub.status}</span></td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * Load Ratings table (database view)
+ */
+function loadDbRatingsTable() {
+    const container = document.getElementById('db-ratings-table');
+    if (!container) return;
+
+    container.innerHTML = sampleData.ratings.map(rating => `
+        <tr>
+            <td><code>${rating.movieId}</code></td>
+            <td><code>${rating.ratingId}</code></td>
+            <td><code>${rating.userEmail}</code></td>
+            <td>${rating.stars}</td>
+            <td>${rating.ratingDate}</td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * Load Plans table (database view)
+ */
+function loadDbPlansTable() {
+    const container = document.getElementById('db-plans-table');
+    if (!container) return;
+
+    container.innerHTML = sampleData.plans.map(plan => `
+        <tr>
+            <td><code>${plan.planName}</code></td>
+            <td>${plan.maxScreens}</td>
+            <td>${formatCurrency(plan.monthlyPrice)}</td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * Load Watches table (database view)
+ */
+function loadDbWatchesTable() {
+    const container = document.getElementById('db-watches-table');
+    if (!container) return;
+
+    container.innerHTML = sampleData.watches.map(watch => `
+        <tr>
+            <td><code>${watch.movieId}</code></td>
+            <td><code>${watch.email}</code></td>
+        </tr>
+    `).join('');
+}
+
+/**
+ * Refresh database tables (called after data changes)
+ */
+function refreshDatabaseTables() {
+    if (currentSection === 'tables') {
+        loadDatabaseTables();
+    }
 }

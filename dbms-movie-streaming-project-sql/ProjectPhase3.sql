@@ -489,10 +489,14 @@ FROM movie;
 -- This function displays a user's watch history.
 -- =========================================================================
 SELECT 
-    m.title
-FROM watches w, movie m
-WHERE w.email = 'john.smith@email.com' AND w.movie_id = m.movie_id
-ORDER BY m.title ASC;
+    m.title,
+    ROUND(AVG(r.stars), 2) AS average_rating,
+    COUNT(r.rating_id) AS total_ratings
+FROM watches w, movie m, rating r
+WHERE w.email = 'john.smith@email.com'
+  AND w.movie_id = m.movie_id
+  AND r.movie_id = m.movie_id
+GROUP BY m.title;
 
 -- =========================================================================
 -- FUNCTION #9 Remove_Movie (Deletion)

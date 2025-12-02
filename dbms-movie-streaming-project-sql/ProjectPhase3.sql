@@ -328,9 +328,8 @@ WHERE u.email = 'newuser@email.com'
 -- =========================================================================
 -- FUNCTION #2: Search_movie_catalog (Query, joins multiple tables)
 -- =========================================================================
--- This function searches the movie catalog using filters.
--- The specific query searches for Sci-Fi movie's released between 2000-2024, 
--- that are 180 mins long or shorter, and are rated 4 stars or above
+-- This function searches the movie catalog using filters of title name, genre, years, length, and min rating
+-- This specific query searches for Sci-Fi movies rated 4 stars or above
 -- =========================================================================
 SELECT 
     m.title,
@@ -345,8 +344,6 @@ FROM movie  m,
 WHERE m.movie_id = r.movie_id -- join condition
   -- User filters 
   AND m.genre = 'Sci-Fi'       
-  AND m.release_year BETWEEN 2000 AND 2024
-  AND m.length_of_movie <= 180
 GROUP BY
     m.title,
     m.production_company,
@@ -476,24 +473,7 @@ ORDER BY total_movies_watched DESC, u.email ASC;
 
 
 -- =========================================================================
--- FUNCTION #7: Most_Popular_Plan (Aggregation, joins multiple tables)
--- =========================================================================
--- This function finds the subscription plan with the highest number of subscribers.
--- =========================================================================
-
-SELECT 
-    p.plan_name,
-    COUNT(DISTINCT h.email) AS user_count
-FROM plan p, "to" t, has h
-WHERE p.plan_name = t.plan_name
-  AND t.sub_id = h.sub_id
-GROUP BY p.plan_name
-ORDER BY user_count DESC
-LIMIT 1;
-
-
--- =========================================================================
--- FUNCTION #8: Find_Longest_Movie (Aggregation, single table query)
+-- FUNCTION #7: Find_Longest_Movie (Aggregation, single table query)
 -- =========================================================================
 -- This function finds the movie with the greatest length.
 -- =========================================================================
@@ -506,7 +486,7 @@ WHERE length_of_movie = (SELECT MAX(length_of_movie) FROM movie);
 
 
 -- =========================================================================
--- FUNCTION #9: View_watch_history (Query, joins multiple tables)
+-- FUNCTION #8: View_watch_history (Query, joins multiple tables)
 -- =========================================================================
 -- This function displays a user's watch history.
 -- =========================================================================
@@ -517,7 +497,7 @@ WHERE w.email = 'john.smith@email.com' AND w.movie_id = m.movie_id
 ORDER BY m.title ASC;
 
 -- =========================================================================
--- FUNCTION #10 Remove_Movie (Deletion)
+-- FUNCTION #9 Remove_Movie (Deletion)
 -- =========================================================================
 -- This function removes a movie from the catalog.
 -- =========================================================================

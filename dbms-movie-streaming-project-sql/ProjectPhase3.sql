@@ -473,16 +473,14 @@ ORDER BY total_movies_watched DESC, u.email ASC;
 
 
 -- =========================================================================
--- FUNCTION #7: Find_Longest_Movie (Aggregation, single table query)
+-- FUNCTION #7: Count_Total_Movies (Aggregation, single table query)
 -- =========================================================================
--- This function finds the movie with the greatest length.
+-- This function counts the total number of movies in the catalog.
 -- =========================================================================
 
 SELECT 
-    title,
-    length_of_movie
-FROM movie
-WHERE length_of_movie = (SELECT MAX(length_of_movie) FROM movie);
+    COUNT(*) AS total_movies
+FROM movie;
 
 
 -- =========================================================================

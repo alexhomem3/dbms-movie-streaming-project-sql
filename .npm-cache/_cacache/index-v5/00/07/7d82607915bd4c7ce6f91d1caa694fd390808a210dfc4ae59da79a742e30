@@ -1,0 +1,2 @@
+
+33ce022f3d3326067dcb58588bd3fbb1b682872a	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/es-object-atoms","integrity":null,"time":1764710110801,"size":"0","metadata":{"time":1764710110801,"url":"http://registry.npmjs.org/es-object-atoms","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:10 GMT","location":"https://registry.npmjs.org/es-object-atoms","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

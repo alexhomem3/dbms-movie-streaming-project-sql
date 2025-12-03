@@ -1,0 +1,2 @@
+
+3b12103e9b5d7b7811c1ece3b9ce5d1a12623c96	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/dunder-proto","integrity":null,"time":1764710110966,"size":"0","metadata":{"time":1764710110966,"url":"http://registry.npmjs.org/dunder-proto","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:10 GMT","location":"https://registry.npmjs.org/dunder-proto","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

@@ -1,0 +1,2 @@
+
+5f092ec9de4399aabae9c5df1b999420f54190b7	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz","integrity":null,"time":1764710111648,"size":"0","metadata":{"time":1764710111648,"url":"http://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:11 GMT","location":"https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

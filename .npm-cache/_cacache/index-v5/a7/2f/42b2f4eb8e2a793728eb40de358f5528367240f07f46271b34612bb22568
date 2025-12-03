@@ -1,0 +1,2 @@
+
+5c84763f9e50084693d6a4bbbf6698901130da70	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/get-proto","integrity":null,"time":1764710110749,"size":"0","metadata":{"time":1764710110749,"url":"http://registry.npmjs.org/get-proto","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:10 GMT","location":"https://registry.npmjs.org/get-proto","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

@@ -1,0 +1,2 @@
+
+9fa84d2d37c1e406e65d4ea28274c1971153d34b	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/chokidar","integrity":null,"time":1764710108336,"size":"0","metadata":{"time":1764710108336,"url":"http://registry.npmjs.org/chokidar","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:08 GMT","location":"https://registry.npmjs.org/chokidar","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

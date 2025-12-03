@@ -1,0 +1,2 @@
+
+09d0114423d0520382817fec8280958201998ffb	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/mime","integrity":null,"time":1764710108960,"size":"0","metadata":{"time":1764710108960,"url":"http://registry.npmjs.org/mime","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:08 GMT","location":"https://registry.npmjs.org/mime","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

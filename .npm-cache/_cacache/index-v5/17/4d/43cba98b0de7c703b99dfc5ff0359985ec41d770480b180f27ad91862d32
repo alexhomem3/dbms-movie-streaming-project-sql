@@ -1,0 +1,2 @@
+
+ff26441c2a8127b453d6fd5f460348f3f092ef27	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/named-placeholders","integrity":null,"time":1764710108291,"size":"0","metadata":{"time":1764710108291,"url":"http://registry.npmjs.org/named-placeholders","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:08 GMT","location":"https://registry.npmjs.org/named-placeholders","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

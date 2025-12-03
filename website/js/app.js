@@ -1,10 +1,9 @@
 /**
  * StreamFlix - Movie Streaming Platform
- * Standalone JavaScript Application
+ * JavaScript Application with MySQL Backend
  */
 
-// Data will be loaded from SQL file via dataLoader.js
-// This is just an empty structure that gets populated from the SQL data
+// Data structure that gets populated from API or SQL file
 let sampleData = {
     movies: [],
     users: [],
@@ -17,95 +16,70 @@ let sampleData = {
 // Global variables
 let currentSection = 'home';
 let filteredMovies = [];
-
-// Cache keys
-const CACHE_KEYS = {
-    DATA: 'streamflix_data',
-    UI_STATE: 'streamflix_ui_state',
-    FILTERED_MOVIES: 'streamflix_filtered_movies'
-};
+let useAPI = false; // Will be set to true if API is available
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
-/**
- * Save data to localStorage
- */
-function saveCache() {
-    try {
-        localStorage.setItem(CACHE_KEYS.DATA, JSON.stringify(sampleData));
-        localStorage.setItem(CACHE_KEYS.UI_STATE, JSON.stringify({
-            currentSection: currentSection
-        }));
-        localStorage.setItem(CACHE_KEYS.FILTERED_MOVIES, JSON.stringify(filteredMovies));
-        console.log('Data cached successfully');
-    } catch (error) {
-        console.error('Error saving cache:', error);
-    }
-}
 
 /**
- * Load data from localStorage
+ * Refresh all data from API
  */
-function loadCache() {
+async function refreshDataFromAPI() {
+    if (!useAPI) return;
+    
     try {
-        const cachedData = localStorage.getItem(CACHE_KEYS.DATA);
-        const cachedUIState = localStorage.getItem(CACHE_KEYS.UI_STATE);
-        const cachedFilteredMovies = localStorage.getItem(CACHE_KEYS.FILTERED_MOVIES);
-        
-        if (cachedData) {
-            sampleData = JSON.parse(cachedData);
-            console.log('Data loaded from cache');
-        }
-        
-        if (cachedUIState) {
-            const uiState = JSON.parse(cachedUIState);
-            currentSection = uiState.currentSection || 'home';
-        }
-        
-        if (cachedFilteredMovies) {
-            filteredMovies = JSON.parse(cachedFilteredMovies);
-        } else {
+        const data = await loadAllDataFromAPI();
+        if (data) {
+            sampleData.users = data.users || [];
+            sampleData.movies = data.movies || [];
+            sampleData.subscriptions = data.subscriptions || [];
+            sampleData.ratings = data.ratings || [];
+            sampleData.plans = data.plans || [];
+            sampleData.watches = data.watches || [];
             filteredMovies = [...sampleData.movies];
+            console.log('Data refreshed from API');
         }
-        
-        return cachedData !== null;
     } catch (error) {
-        console.error('Error loading cache:', error);
-        return false;
+        console.error('Error refreshing data from API:', error);
     }
-}
-
-/**
- * Clear cache (useful for resetting to SQL data)
- */
-function clearCache() {
-    localStorage.removeItem(CACHE_KEYS.DATA);
-    localStorage.removeItem(CACHE_KEYS.UI_STATE);
-    localStorage.removeItem(CACHE_KEYS.FILTERED_MOVIES);
-    console.log('Cache cleared');
 }
 
 /**
  * Initialize the application
  */
 async function initializeApp() {
-    // First, try to load from cache
-    const cacheLoaded = loadCache();
+    // First, check if API is available
+    const apiAvailable = await checkAPIHealth();
     
-    if (!cacheLoaded) {
-        // If no cache, try to load data from SQL
+    if (apiAvailable) {
+        useAPI = true;
+        console.log('🚀 Connected to MySQL backend API');
+        
+        // Load data from API
+        const data = await loadAllDataFromAPI();
+        if (data) {
+            sampleData.users = data.users || [];
+            sampleData.movies = data.movies || [];
+            sampleData.subscriptions = data.subscriptions || [];
+            sampleData.ratings = data.ratings || [];
+            sampleData.plans = data.plans || [];
+            sampleData.watches = data.watches || [];
+            filteredMovies = [...sampleData.movies];
+        }
+    } else {
+        console.log('📁 API not available, falling back to SQL file');
+        useAPI = false;
+        
+        // Try to load data from SQL file
         const loaded = await initializeDataFromSQL();
         if (!loaded) {
             console.warn('Could not load data from SQL, using default sample data');
         } else {
-            // Update filteredMovies after data loads
             filteredMovies = [...sampleData.movies];
         }
-        // Save initial data to cache
-        saveCache();
     }
     
     // Restore UI state
@@ -154,8 +128,6 @@ function showSection(sectionName) {
     if (targetSection) {
         targetSection.style.display = 'block';
         currentSection = sectionName;
-        // Save UI state to cache
-        saveCache();
     }
 
     // Update navigation
@@ -589,7 +561,6 @@ function filterMovies(criteria) {
     });
 
     // Save filteredMovies to cache
-    saveCache();
     
     loadMovies();
 }
@@ -607,7 +578,6 @@ function clearMovieSearch() {
     filteredMovies = [...sampleData.movies];
     
     // Save filteredMovies to cache
-    saveCache();
     
     loadMovies();
 }
@@ -781,7 +751,7 @@ function showAddRatingForm(movieId) {
 /**
  * Submit rating
  */
-function submitRating() {
+async function submitRating() {
     const form = document.getElementById('addRatingForm');
     if (!form.checkValidity()) {
         form.reportValidity();
@@ -793,50 +763,58 @@ function submitRating() {
     const stars = parseFloat(document.getElementById('rating-stars').value);
     const reviewText = document.getElementById('rating-review').value.trim() || null;
     
-    // Get next rating ID for this movie
-    const existingRatings = sampleData.ratings.filter(r => r.movieId === movieId);
-    const nextRatingId = existingRatings.length > 0 
-        ? Math.max(...existingRatings.map(r => r.ratingId)) + 1 
-        : 1;
-    
-    // Get today's date
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const todayString = `${year}-${month}-${day}`;
-    
-    // Create new rating
-            const newRating = {
-                movieId: movieId,
-        ratingId: nextRatingId,
-        userEmail: userEmail,
-        stars: stars,
-        reviewText: reviewText,
-        ratingDate: todayString
-            };
+    if (useAPI) {
+        try {
+            await createRating({ movieId, userEmail, stars, reviewText });
+            await refreshDataFromAPI();
             
-            sampleData.ratings.push(newRating);
-    
-    // Update movie average rating
-    const movie = sampleData.movies.find(m => m.id === movieId);
-    if (movie) {
-        const movieRatings = sampleData.ratings.filter(r => r.movieId === movieId);
-        movie.averageRating = movieRatings.reduce((sum, r) => sum + r.stars, 0) / movieRatings.length;
-        movie.totalRatings = movieRatings.length;
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addRatingModal'));
+            modal.hide();
+            
+            // Refresh displays
+            loadMovies();
+            refreshDatabaseTables();
+            showNotification('Rating submitted successfully!', 'success');
+        } catch (error) {
+            showNotification('Error submitting rating: ' + error.message, 'danger');
+        }
+    } else {
+        // Fallback to local storage
+        const existingRatings = sampleData.ratings.filter(r => r.movieId === movieId);
+        const nextRatingId = existingRatings.length > 0 
+            ? Math.max(...existingRatings.map(r => r.ratingId)) + 1 
+            : 1;
+        
+        const today = new Date();
+        const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        
+        const newRating = {
+            movieId: movieId,
+            ratingId: nextRatingId,
+            userEmail: userEmail,
+            stars: stars,
+            reviewText: reviewText,
+            ratingDate: todayString
+        };
+        
+        sampleData.ratings.push(newRating);
+        
+        const movie = sampleData.movies.find(m => m.id === movieId);
+        if (movie) {
+            const movieRatings = sampleData.ratings.filter(r => r.movieId === movieId);
+            movie.averageRating = movieRatings.reduce((sum, r) => sum + r.stars, 0) / movieRatings.length;
+            movie.totalRatings = movieRatings.length;
+        }
+        
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addRatingModal'));
+        modal.hide();
+        
+        loadMovies();
+        refreshDatabaseTables();
+        showNotification('Rating submitted successfully!', 'success');
     }
-    
-    // Save to cache
-    saveCache();
-    
-    // Close modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('addRatingModal'));
-    modal.hide();
-    
-    // Refresh displays
-    loadMovies();
-    refreshDatabaseTables();
-    showNotification('Rating submitted successfully!', 'success');
 }
 
 /**
@@ -887,7 +865,7 @@ function showSubscriberModal() {
 /**
  * Submit subscriber form
  */
-function submitSubscriberForm() {
+async function submitSubscriberForm() {
     const form = document.getElementById('addSubscriberForm');
     if (!form.checkValidity()) {
         form.reportValidity();
@@ -910,84 +888,127 @@ function submitSubscriberForm() {
     const day = String(today.getDate()).padStart(2, '0');
     const todayString = `${year}-${month}-${day}`;
     
-    // Create user
     const phoneNumber = document.getElementById('subscriber-phone').value;
-    const phoneNumbers = phoneNumber ? [parseInt(phoneNumber.replace(/\D/g, ''))] : [];
-    
-    const newUser = {
-        email: email,
-        firstName: document.getElementById('subscriber-firstname').value,
-        lastName: document.getElementById('subscriber-lastname').value,
-        middleName: document.getElementById('subscriber-middlename').value || null,
-        birthDate: document.getElementById('subscriber-birthdate').value || null,
-        signUpDate: todayString,
-        userType: 'subscriber',
-        status: 'active',
-        phoneNumbers: phoneNumbers
-    };
-    
-    sampleData.users.push(newUser);
-    
-    // Create subscription
-    const planName = document.getElementById('subscriber-plan').value;
-    const plan = sampleData.plans.find(p => p.planName === planName);
     const startDate = document.getElementById('subscription-startdate').value;
+    const planName = document.getElementById('subscriber-plan').value;
     
-    // Calculate end date (1 year from start)
-    const start = new Date(startDate);
-    const endDate = new Date(start);
-    endDate.setFullYear(endDate.getFullYear() + 1);
-    const endDateString = endDate.toISOString().split('T')[0];
-    
-    const cardNumber = document.getElementById('payment-cardnumber').value;
-    const lastFour = cardNumber.slice(-4);
-    
-    const newSubscription = {
-        id: sampleData.subscriptions.length > 0 
-            ? Math.max(...sampleData.subscriptions.map(s => s.id)) + 1 
-            : 1,
-        userEmail: email,
-        planName: planName,
-        status: 'active',
-        startDate: startDate,
-        endDate: endDateString,
-        monthlyPrice: plan.monthlyPrice,
-        maxScreens: plan.maxScreens,
-        billingAddress: {
-            street: document.getElementById('billing-street').value,
-            city: document.getElementById('billing-city').value,
-            state: document.getElementById('billing-state').value,
-            zipCode: document.getElementById('billing-zip').value
-        },
-        paymentMethod: {
-            type: "Credit Card",
-            cardNumber: `****-****-****-${lastFour}`,
-            expiryDate: document.getElementById('payment-expiry').value,
-            cardHolder: document.getElementById('payment-cardholder').value
+    if (useAPI) {
+        try {
+            // Create user via API
+            await createUser({
+                email: email,
+                firstName: document.getElementById('subscriber-firstname').value,
+                lastName: document.getElementById('subscriber-lastname').value,
+                middleName: document.getElementById('subscriber-middlename').value || null,
+                birthDate: document.getElementById('subscriber-birthdate').value || null,
+                signUpDate: todayString,
+                userType: 'subscriber',
+                phoneNumber: phoneNumber ? parseInt(phoneNumber.replace(/\D/g, '')) : null
+            });
+            
+            // Create subscription via API
+            await createSubscription({
+                userEmail: email,
+                planName: planName,
+                startDate: startDate,
+                billingAddress: {
+                    street: document.getElementById('billing-street').value,
+                    city: document.getElementById('billing-city').value,
+                    state: document.getElementById('billing-state').value,
+                    zipCode: document.getElementById('billing-zip').value
+                },
+                paymentMethod: {
+                    cardNumber: document.getElementById('payment-cardnumber').value,
+                    expiryDate: document.getElementById('payment-expiry').value,
+                    cardHolder: document.getElementById('payment-cardholder').value
+                }
+            });
+            
+            await refreshDataFromAPI();
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addSubscriberModal'));
+            modal.hide();
+            
+            // Refresh displays
+            loadUsers();
+            loadSubscriptions();
+            loadHomeData();
+            refreshDatabaseTables();
+            showNotification('Subscriber added successfully!', 'success');
+        } catch (error) {
+            showNotification('Error adding subscriber: ' + error.message, 'danger');
         }
-    };
-    
-    sampleData.subscriptions.push(newSubscription);
-    
-    // Save to cache
-    saveCache();
-    
-    // Close modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('addSubscriberModal'));
-    modal.hide();
-    
-    // Refresh displays
-    loadUsers();
-    loadSubscriptions();
-    loadHomeData();
-    refreshDatabaseTables();
-    showNotification('Subscriber added successfully!', 'success');
+    } else {
+        // Fallback to local storage
+        const phoneNumbers = phoneNumber ? [parseInt(phoneNumber.replace(/\D/g, ''))] : [];
+        
+        const newUser = {
+            email: email,
+            firstName: document.getElementById('subscriber-firstname').value,
+            lastName: document.getElementById('subscriber-lastname').value,
+            middleName: document.getElementById('subscriber-middlename').value || null,
+            birthDate: document.getElementById('subscriber-birthdate').value || null,
+            signUpDate: todayString,
+            userType: 'subscriber',
+            status: 'active',
+            phoneNumbers: phoneNumbers
+        };
+        
+        sampleData.users.push(newUser);
+        
+        const plan = sampleData.plans.find(p => p.planName === planName);
+        const start = new Date(startDate);
+        const endDate = new Date(start);
+        endDate.setFullYear(endDate.getFullYear() + 1);
+        const endDateString = endDate.toISOString().split('T')[0];
+        
+        const cardNumber = document.getElementById('payment-cardnumber').value;
+        const lastFour = cardNumber.slice(-4);
+        
+        const newSubscription = {
+            id: sampleData.subscriptions.length > 0 
+                ? Math.max(...sampleData.subscriptions.map(s => s.id)) + 1 
+                : 1,
+            userEmail: email,
+            planName: planName,
+            status: 'active',
+            startDate: startDate,
+            endDate: endDateString,
+            monthlyPrice: plan.monthlyPrice,
+            maxScreens: plan.maxScreens,
+            billingAddress: {
+                street: document.getElementById('billing-street').value,
+                city: document.getElementById('billing-city').value,
+                state: document.getElementById('billing-state').value,
+                zipCode: document.getElementById('billing-zip').value
+            },
+            paymentMethod: {
+                type: "Credit Card",
+                cardNumber: `****-****-****-${lastFour}`,
+                expiryDate: document.getElementById('payment-expiry').value,
+                cardHolder: document.getElementById('payment-cardholder').value
+            }
+        };
+        
+        sampleData.subscriptions.push(newSubscription);
+        
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('addSubscriberModal'));
+        modal.hide();
+        
+        loadUsers();
+        loadSubscriptions();
+        loadHomeData();
+        refreshDatabaseTables();
+        showNotification('Subscriber added successfully!', 'success');
+    }
 }
 
 /**
  * Add free user (using prompts)
  */
-function addFreeUser() {
+async function addFreeUser() {
     const email = prompt('Enter email:');
     if (!email) return;
     
@@ -1007,39 +1028,63 @@ function addFreeUser() {
     const middleName = prompt('Enter middle name (optional):') || null;
     const birthDate = prompt('Enter birth date (YYYY-MM-DD):') || null;
     
-    // Get today's date in YYYY-MM-DD format (local timezone - CDT)
+    // Get today's date in YYYY-MM-DD format
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     const todayString = `${year}-${month}-${day}`;
     
-    const newUser = {
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        middleName: middleName,
-        birthDate: birthDate,
-        signUpDate: todayString,
-        userType: 'free_user',
-        status: 'active',
-        phoneNumbers: []
-    };
+    const trialEnd = prompt('Enter trial end date (YYYY-MM-DD):') || null;
     
-    const trialEnd = prompt('Enter trial end date (YYYY-MM-DD):');
-    if (trialEnd) {
-        newUser.trialEndDate = trialEnd;
+    if (useAPI) {
+        try {
+            await createUser({
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                middleName: middleName,
+                birthDate: birthDate,
+                signUpDate: todayString,
+                userType: 'free_user',
+                trialEndDate: trialEnd
+            });
+            
+            await refreshDataFromAPI();
+            
+            loadUsers();
+            loadHomeData();
+            refreshDatabaseTables();
+            showNotification('Free user added successfully!', 'success');
+        } catch (error) {
+            showNotification('Error adding free user: ' + error.message, 'danger');
+        }
+    } else {
+        // Fallback to local storage
+        const newUser = {
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            middleName: middleName,
+            birthDate: birthDate,
+            signUpDate: todayString,
+            userType: 'free_user',
+            status: 'active',
+            phoneNumbers: []
+        };
+        
+        if (trialEnd) {
+            newUser.trialEndDate = trialEnd;
+        }
+        
+        sampleData.users.push(newUser);
+        
+        
+        loadUsers();
+        loadHomeData();
+        refreshDatabaseTables();
+        showNotification('Free user added successfully!', 'success');
     }
-    
-    sampleData.users.push(newUser);
-    
-    // Save to cache
-    saveCache();
-    
-    loadUsers();
-    loadHomeData();
-    refreshDatabaseTables();
-    showNotification('Free user added successfully!', 'success');
 }
 
 /**
@@ -1157,7 +1202,7 @@ function toggleSubscriptionFields() {
 /**
  * Submit edit user form
  */
-function submitEditUserForm() {
+async function submitEditUserForm() {
     const form = document.getElementById('editUserForm');
     if (!form.checkValidity()) {
         form.reportValidity();
@@ -1171,56 +1216,103 @@ function submitEditUserForm() {
     const userType = document.getElementById('edit-usertype').value;
     const phoneNumber = document.getElementById('edit-phone').value;
     
-    // Update user basic info
-    user.firstName = document.getElementById('edit-firstname').value;
-    user.lastName = document.getElementById('edit-lastname').value;
-    user.middleName = document.getElementById('edit-middlename').value || null;
-    user.birthDate = document.getElementById('edit-birthdate').value || null;
-    user.phoneNumbers = phoneNumber ? [parseInt(phoneNumber.replace(/\D/g, ''))] : [];
-    
-    const wasSubscriber = user.userType === 'subscriber';
-    const isNowSubscriber = userType === 'subscriber';
-    
-    // Handle user type change
-    if (wasSubscriber && !isNowSubscriber) {
-        // Remove from subscriber, convert to free user
-        user.userType = 'free_user';
-        user.trialEndDate = document.getElementById('edit-trial-end').value || null;
-        // Remove subscription
-        sampleData.subscriptions = sampleData.subscriptions.filter(s => s.userEmail !== userEmail);
-    } else if (!wasSubscriber && isNowSubscriber) {
-        // Convert free user to subscriber
-        user.userType = 'subscriber';
-        delete user.trialEndDate;
-        // Create new subscription
-        createSubscriptionFromEditForm(userEmail);
-    } else if (isNowSubscriber) {
-        // Update existing subscription or create new one
-        const existingSubscription = sampleData.subscriptions.find(s => s.userEmail === userEmail);
-        if (existingSubscription) {
-            updateSubscriptionFromEditForm(userEmail, existingSubscription);
-        } else {
-            createSubscriptionFromEditForm(userEmail);
+    if (useAPI) {
+        try {
+            // Update user basic info via API
+            await updateUser(userEmail, {
+                firstName: document.getElementById('edit-firstname').value,
+                lastName: document.getElementById('edit-lastname').value,
+                middleName: document.getElementById('edit-middlename').value || null,
+                birthDate: document.getElementById('edit-birthdate').value || null,
+                phoneNumber: phoneNumber ? parseInt(phoneNumber.replace(/\D/g, '')) : null
+            });
+            
+            // Handle subscription changes if user is now a subscriber
+            if (userType === 'subscriber') {
+                const planName = document.getElementById('edit-plan').value;
+                const startDate = document.getElementById('edit-subscription-startdate').value;
+                
+                // Check if subscription already exists
+                const existingSubscription = sampleData.subscriptions.find(s => s.userEmail === userEmail);
+                
+                if (!existingSubscription) {
+                    // Create new subscription
+                    await createSubscription({
+                        userEmail: userEmail,
+                        planName: planName,
+                        startDate: startDate,
+                        billingAddress: {
+                            street: document.getElementById('edit-billing-street').value,
+                            city: document.getElementById('edit-billing-city').value,
+                            state: document.getElementById('edit-billing-state').value,
+                            zipCode: document.getElementById('edit-billing-zip').value
+                        },
+                        paymentMethod: {
+                            cardNumber: document.getElementById('edit-payment-cardnumber').value,
+                            expiryDate: document.getElementById('edit-payment-expiry').value,
+                            cardHolder: document.getElementById('edit-payment-cardholder').value
+                        }
+                    });
+                }
+            }
+            
+            await refreshDataFromAPI();
+            
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+            modal.hide();
+            
+            // Refresh displays
+            loadUsers();
+            loadSubscriptions();
+            loadHomeData();
+            refreshDatabaseTables();
+            showNotification('User updated successfully!', 'success');
+        } catch (error) {
+            showNotification('Error updating user: ' + error.message, 'danger');
         }
     } else {
-        // Free user staying as free user
-        user.userType = 'free_user';
-        user.trialEndDate = document.getElementById('edit-trial-end').value || null;
+        // Fallback to local storage
+        user.firstName = document.getElementById('edit-firstname').value;
+        user.lastName = document.getElementById('edit-lastname').value;
+        user.middleName = document.getElementById('edit-middlename').value || null;
+        user.birthDate = document.getElementById('edit-birthdate').value || null;
+        user.phoneNumbers = phoneNumber ? [parseInt(phoneNumber.replace(/\D/g, ''))] : [];
+        
+        const wasSubscriber = user.userType === 'subscriber';
+        const isNowSubscriber = userType === 'subscriber';
+        
+        // Handle user type change
+        if (wasSubscriber && !isNowSubscriber) {
+            user.userType = 'free_user';
+            user.trialEndDate = document.getElementById('edit-trial-end').value || null;
+            sampleData.subscriptions = sampleData.subscriptions.filter(s => s.userEmail !== userEmail);
+        } else if (!wasSubscriber && isNowSubscriber) {
+            user.userType = 'subscriber';
+            delete user.trialEndDate;
+            createSubscriptionFromEditForm(userEmail);
+        } else if (isNowSubscriber) {
+            const existingSubscription = sampleData.subscriptions.find(s => s.userEmail === userEmail);
+            if (existingSubscription) {
+                updateSubscriptionFromEditForm(userEmail, existingSubscription);
+            } else {
+                createSubscriptionFromEditForm(userEmail);
+            }
+        } else {
+            user.userType = 'free_user';
+            user.trialEndDate = document.getElementById('edit-trial-end').value || null;
+        }
+        
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+        modal.hide();
+        
+        loadUsers();
+        loadSubscriptions();
+        loadHomeData();
+        refreshDatabaseTables();
+        showNotification('User updated successfully!', 'success');
     }
-    
-    // Save to cache
-    saveCache();
-    
-    // Close modal
-    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
-    modal.hide();
-    
-    // Refresh displays
-    loadUsers();
-    loadSubscriptions();
-    loadHomeData();
-    refreshDatabaseTables();
-    showNotification('User updated successfully!', 'success');
 }
 
 /**
@@ -1307,22 +1399,33 @@ function updateSubscriptionFromEditForm(userEmail, subscription) {
 /**
  * Delete user
  */
-function deleteUser(userEmail) {
+async function deleteUser(userEmail) {
     if (confirm('Are you sure you want to delete this user?')) {
-        sampleData.users = sampleData.users.filter(u => u.email !== userEmail);
-        // Also remove related subscriptions
-        sampleData.subscriptions = sampleData.subscriptions.filter(s => s.userEmail !== userEmail);
-        // Also remove related ratings
-        sampleData.ratings = sampleData.ratings.filter(r => r.userEmail !== userEmail);
-        
-        // Save to cache
-        saveCache();
-        
-        loadUsers();
-        loadSubscriptions();
-        loadHomeData();
-        refreshDatabaseTables();
-        showNotification('User deleted successfully!', 'info');
+        if (useAPI) {
+            try {
+                await deleteUserAPI(userEmail);
+                await refreshDataFromAPI();
+                
+                loadUsers();
+                loadSubscriptions();
+                loadHomeData();
+                refreshDatabaseTables();
+                showNotification('User deleted successfully!', 'info');
+            } catch (error) {
+                showNotification('Error deleting user: ' + error.message, 'danger');
+            }
+        } else {
+            sampleData.users = sampleData.users.filter(u => u.email !== userEmail);
+            sampleData.subscriptions = sampleData.subscriptions.filter(s => s.userEmail !== userEmail);
+            sampleData.ratings = sampleData.ratings.filter(r => r.userEmail !== userEmail);
+            
+            
+            loadUsers();
+            loadSubscriptions();
+            loadHomeData();
+            refreshDatabaseTables();
+            showNotification('User deleted successfully!', 'info');
+        }
     }
 }
 
@@ -1334,7 +1437,7 @@ function deleteUser(userEmail) {
  * 3. Remove from users' watch list
  * 4. Remove movie
  */
-function deleteMovie(movieId) {
+async function deleteMovie(movieId) {
     // Step 1: Verify movie exists
     const movie = sampleData.movies.find(m => m.id === movieId);
     if (!movie) {
@@ -1348,33 +1451,45 @@ function deleteMovie(movieId) {
         return;
     }
     
-    // Step 2: Remove ratings for that movie
-    const ratingsCount = sampleData.ratings.filter(r => r.movieId === movieId).length;
-    sampleData.ratings = sampleData.ratings.filter(r => r.movieId !== movieId);
-    
-    // Step 3: Remove from users' watch list
-    const watchesCount = sampleData.watches.filter(w => w.movieId === movieId).length;
-    sampleData.watches = sampleData.watches.filter(w => w.movieId !== movieId);
-    
-    // Step 4: Remove movie
-    sampleData.movies = sampleData.movies.filter(m => m.id !== movieId);
-    
-    // Update filteredMovies to reflect the deletion
-    filteredMovies = [...sampleData.movies];
-    
-    // Save to cache
-    saveCache();
-    
-    // Update UI
-    loadMovies();
-    loadHomeData();
-    loadReports();
-    refreshDatabaseTables();
-    
-    showNotification(
-        `Movie "${movieTitle}" deleted successfully!\nRemoved ${ratingsCount} rating(s) and ${watchesCount} watch record(s).`, 
-        'info'
-    );
+    if (useAPI) {
+        try {
+            await deleteMovieAPI(movieId);
+            await refreshDataFromAPI();
+            
+            filteredMovies = [...sampleData.movies];
+            
+            loadMovies();
+            loadHomeData();
+            loadReports();
+            refreshDatabaseTables();
+            
+            showNotification(`Movie "${movieTitle}" deleted successfully!`, 'info');
+        } catch (error) {
+            showNotification('Error deleting movie: ' + error.message, 'danger');
+        }
+    } else {
+        // Fallback to local storage
+        const ratingsCount = sampleData.ratings.filter(r => r.movieId === movieId).length;
+        sampleData.ratings = sampleData.ratings.filter(r => r.movieId !== movieId);
+        
+        const watchesCount = sampleData.watches.filter(w => w.movieId === movieId).length;
+        sampleData.watches = sampleData.watches.filter(w => w.movieId !== movieId);
+        
+        sampleData.movies = sampleData.movies.filter(m => m.id !== movieId);
+        
+        filteredMovies = [...sampleData.movies];
+        
+        
+        loadMovies();
+        loadHomeData();
+        loadReports();
+        refreshDatabaseTables();
+        
+        showNotification(
+            `Movie "${movieTitle}" deleted successfully!\nRemoved ${ratingsCount} rating(s) and ${watchesCount} watch record(s).`, 
+            'info'
+        );
+    }
 }
 
 /**
@@ -1567,13 +1682,21 @@ function debounce(func, wait) {
 /**
  * Load all database tables for the Tables section
  */
-function loadDatabaseTables() {
+async function loadDatabaseTables() {
     loadDbUsersTable();
     loadDbMoviesTable();
     loadDbSubscriptionsTable();
     loadDbRatingsTable();
     loadDbPlansTable();
     loadDbWatchesTable();
+    // Relationship / supporting tables (use API when available)
+    await loadDbUser2Table();
+    await loadDbFreeUserTable();
+    await loadDbSubscriberTable();
+    await loadDbSubscriber2Table();
+    await loadDbSubscriber3Table();
+    await loadDbHasTable();
+    await loadDbToTable();
     updateTableBadges();
 }
 
@@ -1582,6 +1705,7 @@ function loadDatabaseTables() {
  */
 function updateTableBadges() {
     document.getElementById('user-count-badge').textContent = sampleData.users.length;
+    const user2CountBadge = document.getElementById('user2-count-badge');
     document.getElementById('movie-count-badge').textContent = sampleData.movies.length;
     document.getElementById('subscription-count-badge').textContent = sampleData.subscriptions.length;
     document.getElementById('rating-count-badge').textContent = sampleData.ratings.length;
@@ -1594,6 +1718,11 @@ function updateTableBadges() {
     document.getElementById('rating-table-count').textContent = `${sampleData.ratings.length} rows`;
     document.getElementById('plan-table-count').textContent = `${sampleData.plans.length} rows`;
     document.getElementById('watches-table-count').textContent = `${sampleData.watches.length} rows`;
+
+    // These counts are updated in their specific loaders when using the API.
+    if (user2CountBadge && user2CountBadge.textContent === '0') {
+        document.getElementById('user2-table-count').textContent = `${user2CountBadge.textContent} rows`;
+    }
 }
 
 /**
@@ -1698,6 +1827,224 @@ function loadDbWatchesTable() {
             <td><code>${watch.email}</code></td>
         </tr>
     `).join('');
+}
+
+/**
+ * Helper to show a message when API isn't available
+ */
+function renderApiOnlyMessage(colspan) {
+    return `
+        <tr>
+            <td colspan="${colspan}" class="text-center text-muted">
+                Available when MySQL backend is running.
+            </td>
+        </tr>
+    `;
+}
+
+/**
+ * Load user2 (phone numbers) table via API
+ */
+async function loadDbUser2Table() {
+    const container = document.getElementById('db-user2-table');
+    if (!container) return;
+
+    if (!useAPI) {
+        container.innerHTML = renderApiOnlyMessage(2);
+        return;
+    }
+
+    try {
+        const rows = await fetchTableData('user2');
+        document.getElementById('user2-count-badge').textContent = rows.length;
+        document.getElementById('user2-table-count').textContent = `${rows.length} rows`;
+
+        container.innerHTML = rows.map(row => `
+            <tr>
+                <td><code>${row.email}</code></td>
+                <td>${row.phone_number}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading user2 table:', error);
+        container.innerHTML = renderApiOnlyMessage(2);
+    }
+}
+
+/**
+ * Load free_user table via API
+ */
+async function loadDbFreeUserTable() {
+    const container = document.getElementById('db-free-user-table');
+    if (!container) return;
+
+    if (!useAPI) {
+        container.innerHTML = renderApiOnlyMessage(2);
+        return;
+    }
+
+    try {
+        const rows = await fetchTableData('free_users');
+        document.getElementById('free-user-count-badge').textContent = rows.length;
+        document.getElementById('free-user-table-count').textContent = `${rows.length} rows`;
+
+        container.innerHTML = rows.map(row => `
+            <tr>
+                <td><code>${row.email}</code></td>
+                <td>${row.trial_end_date}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading free_user table:', error);
+        container.innerHTML = renderApiOnlyMessage(2);
+    }
+}
+
+/**
+ * Load subscriber table via API
+ */
+async function loadDbSubscriberTable() {
+    const container = document.getElementById('db-subscriber-table');
+    if (!container) return;
+
+    if (!useAPI) {
+        container.innerHTML = renderApiOnlyMessage(1);
+        return;
+    }
+
+    try {
+        const rows = await fetchTableData('subscribers');
+        document.getElementById('subscriber-count-badge').textContent = rows.length;
+        document.getElementById('subscriber-table-count').textContent = `${rows.length} rows`;
+
+        container.innerHTML = rows.map(row => `
+            <tr>
+                <td><code>${row.email}</code></td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading subscriber table:', error);
+        container.innerHTML = renderApiOnlyMessage(1);
+    }
+}
+
+/**
+ * Load subscriber2 (payment methods) table via API
+ */
+async function loadDbSubscriber2Table() {
+    const container = document.getElementById('db-subscriber2-table');
+    if (!container) return;
+
+    if (!useAPI) {
+        container.innerHTML = renderApiOnlyMessage(2);
+        return;
+    }
+
+    try {
+        const rows = await fetchTableData('subscriber2');
+        document.getElementById('subscriber2-count-badge').textContent = rows.length;
+        document.getElementById('subscriber2-table-count').textContent = `${rows.length} rows`;
+
+        container.innerHTML = rows.map(row => `
+            <tr>
+                <td><code>${row.email}</code></td>
+                <td>${row.payment_method}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading subscriber2 table:', error);
+        container.innerHTML = renderApiOnlyMessage(2);
+    }
+}
+
+/**
+ * Load subscriber3 (billing addresses) table via API
+ */
+async function loadDbSubscriber3Table() {
+    const container = document.getElementById('db-subscriber3-table');
+    if (!container) return;
+
+    if (!useAPI) {
+        container.innerHTML = renderApiOnlyMessage(5);
+        return;
+    }
+
+    try {
+        const rows = await fetchTableData('subscriber3');
+        document.getElementById('subscriber3-count-badge').textContent = rows.length;
+        document.getElementById('subscriber3-table-count').textContent = `${rows.length} rows`;
+
+        container.innerHTML = rows.map(row => `
+            <tr>
+                <td><code>${row.email}</code></td>
+                <td>${row.street}</td>
+                <td>${row.city}</td>
+                <td>${row.state}</td>
+                <td>${row.zip}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading subscriber3 table:', error);
+        container.innerHTML = renderApiOnlyMessage(5);
+    }
+}
+
+/**
+ * Load has table via API
+ */
+async function loadDbHasTable() {
+    const container = document.getElementById('db-has-table');
+    if (!container) return;
+
+    if (!useAPI) {
+        container.innerHTML = renderApiOnlyMessage(2);
+        return;
+    }
+
+    try {
+        const rows = await fetchTableData('has');
+        document.getElementById('has-count-badge').textContent = rows.length;
+        document.getElementById('has-table-count').textContent = `${rows.length} rows`;
+
+        container.innerHTML = rows.map(row => `
+            <tr>
+                <td><code>${row.email}</code></td>
+                <td><code>${row.sub_id}</code></td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading has table:', error);
+        container.innerHTML = renderApiOnlyMessage(2);
+    }
+}
+
+/**
+ * Load to table via API
+ */
+async function loadDbToTable() {
+    const container = document.getElementById('db-to-table');
+    if (!container) return;
+
+    if (!useAPI) {
+        container.innerHTML = renderApiOnlyMessage(2);
+        return;
+    }
+
+    try {
+        const rows = await fetchTableData('to');
+        document.getElementById('to-count-badge').textContent = rows.length;
+        document.getElementById('to-table-count').textContent = `${rows.length} rows`;
+
+        container.innerHTML = rows.map(row => `
+            <tr>
+                <td><code>${row.sub_id}</code></td>
+                <td><code>${row.plan_name}</code></td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading to table:', error);
+        container.innerHTML = renderApiOnlyMessage(2);
+    }
 }
 
 /**

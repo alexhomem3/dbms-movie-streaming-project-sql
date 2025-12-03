@@ -1,0 +1,2 @@
+
+10a4568c75efd81f93307ff412310f91e4694871	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/toidentifier","integrity":null,"time":1764710108869,"size":"0","metadata":{"time":1764710108869,"url":"http://registry.npmjs.org/toidentifier","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:08 GMT","location":"https://registry.npmjs.org/toidentifier","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

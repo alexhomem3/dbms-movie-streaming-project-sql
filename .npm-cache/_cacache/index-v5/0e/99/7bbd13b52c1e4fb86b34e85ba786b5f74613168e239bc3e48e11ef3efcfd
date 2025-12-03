@@ -1,0 +1,2 @@
+
+2804dbd7e54ee9a3dac7d73bf7a19604c72a49cf	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/safer-buffer","integrity":null,"time":1764710109288,"size":"0","metadata":{"time":1764710109288,"url":"http://registry.npmjs.org/safer-buffer","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:09 GMT","location":"https://registry.npmjs.org/safer-buffer","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

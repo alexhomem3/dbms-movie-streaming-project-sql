@@ -1,10 +1,15 @@
 # StreamFlix - Movie Streaming Platform
 
-## Run the Application
-
+**Mac/Linux:**
 ```bash
-python3 -m http.server 8000
+./setup.sh
 ```
 
-Then open `http://localhost:8000/website/` in your browser.
+**Windows:**
+```cmd
+setup.bat
+```
+
+The app will open at `http://localhost:3000`
+
 

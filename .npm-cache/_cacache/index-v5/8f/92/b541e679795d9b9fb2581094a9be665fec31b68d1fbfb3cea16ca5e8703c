@@ -1,0 +1,2 @@
+
+1fd3d4e1d748c32b3f1c8bb4eacbb1ae540272d5	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/aws-ssl-profiles","integrity":null,"time":1764710108188,"size":"0","metadata":{"time":1764710108187,"url":"http://registry.npmjs.org/aws-ssl-profiles","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:08 GMT","location":"https://registry.npmjs.org/aws-ssl-profiles","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

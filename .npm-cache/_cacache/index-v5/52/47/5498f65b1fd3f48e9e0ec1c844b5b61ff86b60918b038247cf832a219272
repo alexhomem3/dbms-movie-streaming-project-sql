@@ -1,0 +1,2 @@
+
+fada9d34731c5222c7e6122edff7173ee8d93995	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/qs","integrity":null,"time":1764710108026,"size":"0","metadata":{"time":1764710108026,"url":"http://registry.npmjs.org/qs","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:08 GMT","location":"https://registry.npmjs.org/qs","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

@@ -1,0 +1,2 @@
+
+ccc72197b9669fa2fda3cd4b6f88ad3fdf4bff8a	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/object-inspect","integrity":null,"time":1764710110295,"size":"0","metadata":{"time":1764710110295,"url":"http://registry.npmjs.org/object-inspect","reqHeaders":{"accept":"application/json"},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:10 GMT","location":"https://registry.npmjs.org/object-inspect","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

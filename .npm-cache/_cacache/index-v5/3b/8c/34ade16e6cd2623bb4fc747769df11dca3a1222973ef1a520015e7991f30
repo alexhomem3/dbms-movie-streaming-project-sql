@@ -1,0 +1,2 @@
+
+6d6615bc7660adbca77b0f3a1c14d2b091603627	{"key":"make-fetch-happen:request-cache:http://registry.npmjs.org/minimatch/-/minimatch-3.1.2.tgz","integrity":null,"time":1764710111736,"size":"0","metadata":{"time":1764710111736,"url":"http://registry.npmjs.org/minimatch/-/minimatch-3.1.2.tgz","reqHeaders":{},"resHeaders":{"content-type":"text/plain;charset=UTF-8","date":"Tue, 02 Dec 2025 21:15:11 GMT","location":"https://registry.npmjs.org/minimatch/-/minimatch-3.1.2.tgz","vary":"Accept-Encoding"},"options":{"compress":true},"status":301}}

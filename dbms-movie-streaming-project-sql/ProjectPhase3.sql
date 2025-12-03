@@ -43,7 +43,7 @@ CREATE TABLE subscriber (
 -- Payment_method is a multi-valued attribute 
 CREATE TABLE subscriber2 (
     email varchar(255),
-    payment_method INTEGER NOT NULL,
+    payment_method varchar(20) NOT NULL,
     PRIMARY KEY (email, payment_method),
     FOREIGN KEY (email) REFERENCES subscriber(email)
 );

@@ -176,11 +176,31 @@ function loadHomeData() {
     document.getElementById('total-subscriptions').textContent = activeSubscriptions;
     
     // Calculate average rating
-    const totalRatings = sampleData.ratings.reduce((sum, rating) => sum + rating.stars, 0);
-    const avgRating = sampleData.ratings.length > 0 
-        ? (totalRatings / sampleData.ratings.length).toFixed(1) 
-        : '0.0';
-    document.getElementById('total-ratings').textContent = avgRating;
+    const ratings = Array.isArray(sampleData.ratings) ? sampleData.ratings : [];
+    if (ratings.length > 0) {
+        const validRatings = ratings.filter(r => r && (r.stars !== null && r.stars !== undefined));
+        if (validRatings.length > 0) {
+            const totalRatings = validRatings.reduce((sum, rating) => {
+                const stars = parseFloat(rating.stars);
+                return sum + (isNaN(stars) ? 0 : stars);
+            }, 0);
+            const avgRating = (totalRatings / validRatings.length).toFixed(1);
+            const ratingElement = document.getElementById('total-ratings');
+            if (ratingElement) {
+                ratingElement.textContent = avgRating;
+            }
+        } else {
+            const ratingElement = document.getElementById('total-ratings');
+            if (ratingElement) {
+                ratingElement.textContent = '0.0';
+            }
+        }
+    } else {
+        const ratingElement = document.getElementById('total-ratings');
+        if (ratingElement) {
+            ratingElement.textContent = '0.0';
+        }
+    }
 
     // Load recent movies
     loadRecentMovies();
@@ -208,11 +228,11 @@ function loadRecentMovies() {
                         <strong class="text-primary">${movie.length} min</strong>
                     </p>
                     <p class="card-text small">
-                        <i class="fas fa-star me-1"></i>${movie.averageRating}/5
+                        <i class="fas fa-star me-1"></i>${parseFloat(movie.averageRating || 0).toFixed(1)}/5.0
                     </p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="badge bg-primary small">${movie.genre}</span>
-                        <span class="badge bg-success small">${movie.averageRating}/5</span>
+                        <span class="badge bg-success small">${parseFloat(movie.averageRating || 0).toFixed(1)}/5.0</span>
                     </div>
                 </div>
             </div>
@@ -240,11 +260,11 @@ function loadMovies() {
                         <strong class="text-primary">${movie.length} min</strong>
                     </p>
                     <p class="card-text small">
-                        <i class="fas fa-star me-1"></i>${movie.averageRating}/5
+                        <i class="fas fa-star me-1"></i>${parseFloat(movie.averageRating || 0).toFixed(1)}/5.0
                     </p>
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge bg-primary small">${movie.genre}</span>
-                        <span class="badge bg-success small">${movie.averageRating}/5</span>
+                        <span class="badge bg-success small">${parseFloat(movie.averageRating || 0).toFixed(1)}/5.0</span>
                     </div>
                 </div>
                 <div class="card-footer p-2" onclick="event.stopPropagation();">
@@ -278,7 +298,7 @@ function loadUsers() {
         <tr>
             <td>${user.firstName} ${user.lastName}</td>
             <td>${user.email}</td>
-            <td>${user.birthDate}</td>
+            <td>${user.birthDate ? formatDate(user.birthDate) : ''}</td>
             <td>${formatDate(user.signUpDate)}</td>
             <td><span class="badge bg-${getUserTypeColor(user.userType)}">${user.userType}</span></td>
             <td><span class="badge bg-success">${user.status}</span></td>
@@ -361,7 +381,7 @@ function loadRatings() {
                 <td>
                     <div class="d-flex align-items-center">
                         ${generateStars(rating.stars)}
-                        <span class="ms-2">${rating.stars}/5</span>
+                        <span class="ms-2">${parseFloat(rating.stars || 0).toFixed(1)}/5.0</span>
                     </div>
                 </td>
                 <td>${rating.reviewText ? rating.reviewText.substring(0, 50) + '...' : 'No review'}</td>
@@ -396,9 +416,31 @@ function updateAnalyticsStats() {
     document.getElementById('analytics-subscriptions').textContent = activeSubscriptions;
     
     // Calculate average rating from actual ratings data
-    const totalRatings = sampleData.ratings.reduce((sum, rating) => sum + rating.stars, 0);
-    const avgRating = (totalRatings / sampleData.ratings.length).toFixed(1);
-    document.getElementById('analytics-rating').textContent = avgRating;
+    const ratings = Array.isArray(sampleData.ratings) ? sampleData.ratings : [];
+    if (ratings.length > 0) {
+        const validRatings = ratings.filter(r => r && (r.stars !== null && r.stars !== undefined));
+        if (validRatings.length > 0) {
+            const totalRatings = validRatings.reduce((sum, rating) => {
+                const stars = parseFloat(rating.stars);
+                return sum + (isNaN(stars) ? 0 : stars);
+            }, 0);
+            const avgRating = (totalRatings / validRatings.length).toFixed(1);
+            const ratingElement = document.getElementById('analytics-rating');
+            if (ratingElement) {
+                ratingElement.textContent = avgRating;
+            }
+        } else {
+            const ratingElement = document.getElementById('analytics-rating');
+            if (ratingElement) {
+                ratingElement.textContent = '0.0';
+            }
+        }
+    } else {
+        const ratingElement = document.getElementById('analytics-rating');
+        if (ratingElement) {
+            ratingElement.textContent = '0.0';
+        }
+    }
 }
 
 /**
@@ -443,7 +485,7 @@ function loadTopMovies() {
                                 ${generateStars(topMovie.averageRating)}
                 </div>
                             <div>
-                                <h4 class="mb-0 text-warning">${topMovie.averageRating}/5</h4>
+                                <h4 class="mb-0 text-warning">${parseFloat(topMovie.averageRating || 0).toFixed(1)}/5.0</h4>
                                 <small class="text-muted">${topMovie.totalRatings} ${topMovie.totalRatings === 1 ? 'rating' : 'ratings'}</small>
                             </div>
                         </div>
@@ -458,7 +500,7 @@ function loadTopMovies() {
                     <div class="mb-2">
                         <i class="fas fa-star fa-2x text-warning"></i>
                     </div>
-                    <h2 class="text-warning mb-1">${topMovie.averageRating}</h2>
+                    <h2 class="text-warning mb-1">${parseFloat(topMovie.averageRating || 0).toFixed(1)}</h2>
                     <p class="mb-0 small text-muted">Out of 5.0</p>
                     <div class="mt-2">
                         <span class="badge bg-warning text-dark">#1 Rated</span>
@@ -636,7 +678,7 @@ function viewMovieDetails(movieId) {
                     <span class="badge bg-primary fs-6">${movie.genre}</span>
                 </div>
                 <div class="mb-2">
-                    <strong>${movie.averageRating}/5</strong> <i class="fas fa-star text-warning"></i>
+                    <strong>${parseFloat(movie.averageRating || 0).toFixed(1)}/5.0</strong> <i class="fas fa-star text-warning"></i>
                     <small class="text-muted">(${movie.totalRatings} ${movie.totalRatings === 1 ? 'rating' : 'ratings'})</small>
                 </div>
             </div>
@@ -666,7 +708,7 @@ function viewMovieDetails(movieId) {
                     </tr>
                     <tr>
                         <td><strong>Average Rating:</strong></td>
-                        <td>${movie.averageRating}/5 (${movie.totalRatings} ${movie.totalRatings === 1 ? 'rating' : 'ratings'})</td>
+                        <td>${parseFloat(movie.averageRating || 0).toFixed(1)}/5.0 (${movie.totalRatings} ${movie.totalRatings === 1 ? 'rating' : 'ratings'})</td>
                     </tr>
                 </table>
             </div>
@@ -693,7 +735,7 @@ function viewMovieDetails(movieId) {
                                         <div class="text-end">
                                             <div class="d-flex align-items-center">
                                                 ${generateStars(rating.stars)}
-                                                <span class="ms-2 fw-bold">${rating.stars}/5</span>
+                                                <span class="ms-2 fw-bold">${parseFloat(rating.stars || 0).toFixed(1)}/5.0</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1542,7 +1584,7 @@ function viewWatchHistory(userEmail) {
                             <div class="col-md-4 text-end">
                                 <div class="d-flex align-items-center justify-content-end">
                                     ${generateStars(movie.averageRating)}
-                                    <span class="ms-2 fw-bold">${movie.averageRating}/5</span>
+                                    <span class="ms-2 fw-bold">${parseFloat(movie.averageRating || 0).toFixed(1)}/5.0</span>
                                 </div>
                                 <small class="text-muted">${movie.totalRatings} ${movie.totalRatings === 1 ? 'rating' : 'ratings'}</small>
                             </div>
@@ -1575,7 +1617,7 @@ function viewRating(movieId, ratingId) {
         const movie = sampleData.movies.find(m => m.id === rating.movieId);
         const user = sampleData.users.find(u => u.email === rating.userEmail);
         
-        alert(`Rating Details:\n\nMovie: ${movie ? movie.title : 'N/A'}\nUser: ${user ? `${user.firstName} ${user.lastName}` : 'N/A'}\nRating: ${rating.stars}/5\nReview: ${rating.reviewText || 'No review'}\nDate: ${formatDate(rating.ratingDate)}`);
+        alert(`Rating Details:\n\nMovie: ${movie ? movie.title : 'N/A'}\nUser: ${user ? `${user.firstName} ${user.lastName}` : 'N/A'}\nRating: ${parseFloat(rating.stars || 0).toFixed(1)}/5.0\nReview: ${rating.reviewText || 'No review'}\nDate: ${formatDate(rating.ratingDate)}`);
     }
 }
 
@@ -1621,6 +1663,18 @@ function formatDate(dateString) {
         month: 'short',
         day: 'numeric'
     });
+}
+
+/**
+ * Format date as YYYY-MM-DD
+ */
+function formatDateSimple(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 /**
@@ -1744,8 +1798,8 @@ function loadDbUsersTable() {
             <td>${user.firstName}</td>
             <td>${user.middleName || '<span class="text-muted">NULL</span>'}</td>
             <td>${user.lastName}</td>
-            <td>${user.birthDate || '<span class="text-muted">NULL</span>'}</td>
-            <td>${user.signUpDate}</td>
+            <td>${user.birthDate ? formatDate(user.birthDate) : '<span class="text-muted">NULL</span>'}</td>
+            <td>${user.signUpDate ? formatDate(user.signUpDate) : '<span class="text-muted">NULL</span>'}</td>
         </tr>
     `).join('');
 }
@@ -1776,14 +1830,26 @@ function loadDbSubscriptionsTable() {
     const container = document.getElementById('db-subscriptions-table');
     if (!container) return;
 
-    container.innerHTML = sampleData.subscriptions.map(sub => `
+    // Sort subscriptions by sub_id in ascending order
+    const sortedSubscriptions = [...sampleData.subscriptions].sort((a, b) => (a.id || 0) - (b.id || 0));
+
+    container.innerHTML = sortedSubscriptions.map(sub => {
+        // Find the user associated with this subscription
+        const user = sampleData.users.find(u => u.email === sub.userEmail);
+        const firstName = user ? user.firstName : '<span class="text-muted">N/A</span>';
+        const lastName = user ? user.lastName : '<span class="text-muted">N/A</span>';
+        
+        return `
         <tr>
+            <td>${firstName}</td>
+            <td>${lastName}</td>
             <td><code>${sub.id}</code></td>
-            <td>${sub.startDate}</td>
-            <td>${sub.endDate}</td>
+            <td>${sub.startDate ? formatDate(sub.startDate) : '<span class="text-muted">NULL</span>'}</td>
+            <td>${sub.endDate ? formatDate(sub.endDate) : '<span class="text-muted">NULL</span>'}</td>
             <td><span class="badge bg-${getStatusColor(sub.status)}">${sub.status}</span></td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 /**
@@ -1799,7 +1865,7 @@ function loadDbRatingsTable() {
             <td><code>${rating.ratingId}</code></td>
             <td><code>${rating.userEmail}</code></td>
             <td>${rating.stars}</td>
-            <td>${rating.ratingDate}</td>
+            <td>${rating.ratingDate ? formatDate(rating.ratingDate) : '<span class="text-muted">NULL</span>'}</td>
         </tr>
     `).join('');
 }
@@ -1904,7 +1970,7 @@ async function loadDbFreeUserTable() {
         container.innerHTML = rows.map(row => `
             <tr>
                 <td><code>${row.email}</code></td>
-                <td>${row.trial_end_date}</td>
+                <td>${row.trial_end_date ? formatDate(row.trial_end_date) : '<span class="text-muted">NULL</span>'}</td>
             </tr>
         `).join('');
     } catch (error) {

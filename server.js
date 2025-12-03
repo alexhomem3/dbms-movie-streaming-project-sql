@@ -24,6 +24,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'website')));
 
+// Database connection check middleware for API routes
+app.use('/api', (req, res, next) => {
+    if (!pool) {
+        return res.status(503).json({ 
+            error: 'Database not connected. Please check your MySQL connection and restart the server.',
+            details: 'Make sure MySQL is running and the database credentials are correct in server.js or .env file'
+        });
+    }
+    next();
+});
+
 // MySQL Connection Configuration
 // Update these values with your MySQL credentials
 const dbConfig = {
@@ -45,6 +56,7 @@ async function initializeDatabase() {
         const connection = await pool.getConnection();
         console.log('✅ Connected to MySQL database');
         connection.release();
+        return true;
     } catch (error) {
         console.error('❌ Database connection failed:', error.message);
         console.log('\n📝 Make sure to:');
@@ -52,7 +64,22 @@ async function initializeDatabase() {
         console.log('   2. Create database: CREATE DATABASE streamflix;');
         console.log('   3. Run the SQL file: mysql -u root -p streamflix < dbms-movie-streaming-project-sql/ProjectPhase3.sql');
         console.log('   4. Update dbConfig in server.js with your MySQL credentials\n');
+        pool = null;
+        return false;
     }
+}
+
+/**
+ * Check if database is connected
+ */
+function checkDatabaseConnection(res) {
+    if (!pool) {
+        res.status(503).json({ 
+            error: 'Database not connected. Please check your MySQL connection and restart the server.' 
+        });
+        return false;
+    }
+    return true;
 }
 
 // ============================================
@@ -70,6 +97,7 @@ app.get('/api/health', (req, res) => {
 
 // Get all users
 app.get('/api/users', async (req, res) => {
+    if (!checkDatabaseConnection(res)) return;
     try {
         const [users] = await pool.query(`
             SELECT 

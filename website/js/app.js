@@ -71,6 +71,10 @@ async function initializeApp() {
         }
     } else {
         console.log('📁 API not available, falling back to SQL file');
+        console.log('⚠️  To use MySQL backend, make sure the server is running:');
+        console.log('   1. Run: ./setup.sh (Mac/Linux) or setup.bat (Windows)');
+        console.log('   2. Or manually: npm start');
+        console.log('   3. Server should be running at http://localhost:3000');
         useAPI = false;
         
         // Try to load data from SQL file
@@ -168,7 +172,8 @@ function loadHomeData() {
     // Update statistics
     document.getElementById('total-movies').textContent = sampleData.movies.length;
     document.getElementById('total-users').textContent = sampleData.users.length;
-    document.getElementById('total-subscriptions').textContent = sampleData.subscriptions.length;
+    const activeSubscriptions = sampleData.subscriptions.filter(sub => sub.status === 'active').length;
+    document.getElementById('total-subscriptions').textContent = activeSubscriptions;
     
     // Calculate average rating
     const totalRatings = sampleData.ratings.reduce((sum, rating) => sum + rating.stars, 0);
@@ -387,7 +392,8 @@ function updateAnalyticsStats() {
     // Update analytics cards with actual data
     document.getElementById('analytics-movies').textContent = sampleData.movies.length;
     document.getElementById('analytics-users').textContent = sampleData.users.length;
-    document.getElementById('analytics-subscriptions').textContent = sampleData.subscriptions.length;
+    const activeSubscriptions = sampleData.subscriptions.filter(sub => sub.status === 'active').length;
+    document.getElementById('analytics-subscriptions').textContent = activeSubscriptions;
     
     // Calculate average rating from actual ratings data
     const totalRatings = sampleData.ratings.reduce((sum, rating) => sum + rating.stars, 0);
@@ -1835,8 +1841,15 @@ function loadDbWatchesTable() {
 function renderApiOnlyMessage(colspan) {
     return `
         <tr>
-            <td colspan="${colspan}" class="text-center text-muted">
-                Available when MySQL backend is running.
+            <td colspan="${colspan}" class="text-center">
+                <div class="alert alert-warning">
+                    <strong>⚠️ MySQL Backend Not Connected</strong><br>
+                    <small>
+                        Make sure the server is running:<br>
+                        Run <code>./setup.sh</code> or <code>npm start</code> in the project directory<br>
+                        Server should be at <code>http://localhost:3000</code>
+                    </small>
+                </div>
             </td>
         </tr>
     `;

@@ -1757,6 +1757,7 @@ async function loadDatabaseTables() {
     await loadDbSubscriber3Table();
     await loadDbHasTable();
     await loadDbToTable();
+    await loadDbRating2Table();
     updateTableBadges();
 }
 
@@ -2123,6 +2124,36 @@ async function loadDbToTable() {
     } catch (error) {
         console.error('Error loading to table:', error);
         container.innerHTML = renderApiOnlyMessage(2);
+    }
+}
+
+/**
+ * Load rating2 (review texts) table via API
+ */
+async function loadDbRating2Table() {
+    const container = document.getElementById('db-rating2-table');
+    if (!container) return;
+
+    if (!useAPI) {
+        container.innerHTML = renderApiOnlyMessage(3);
+        return;
+    }
+
+    try {
+        const rows = await fetchTableData('rating2');
+        document.getElementById('rating2-count-badge').textContent = rows.length;
+        document.getElementById('rating2-table-count').textContent = `${rows.length} rows`;
+
+        container.innerHTML = rows.map(row => `
+            <tr>
+                <td><code>${row.movie_id}</code></td>
+                <td><code>${row.rating_id}</code></td>
+                <td>${row.review_text || '<span class="text-muted">NULL</span>'}</td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading rating2 table:', error);
+        container.innerHTML = renderApiOnlyMessage(3);
     }
 }
 

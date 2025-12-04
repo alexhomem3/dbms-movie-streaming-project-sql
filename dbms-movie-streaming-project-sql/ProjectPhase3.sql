@@ -123,7 +123,7 @@ CREATE TABLE rating2 (
     movie_id integer,
     rating_id integer,
     review_text varchar(2000),
-    PRIMARY KEY (movie_id, rating_id),
+    PRIMARY KEY (movie_id, rating_id, review_text),
     FOREIGN KEY (movie_id, rating_id) REFERENCES rating(movie_id, rating_id)
 );
 

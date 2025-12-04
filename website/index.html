@@ -518,6 +518,11 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="rating2-tab-btn" data-bs-toggle="tab" data-bs-target="#rating2-tab" type="button" role="tab">
+                            <i class="fas fa-comment me-1"></i>Review Texts <span class="badge bg-primary" id="rating2-count-badge">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="plans-tab-btn" data-bs-toggle="tab" data-bs-target="#plans-tab" type="button" role="tab">
                             <i class="fas fa-tags me-1"></i>Plan <span class="badge bg-primary" id="plan-count-badge">0</span>
                         </button>
@@ -539,12 +544,12 @@
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="subscriber2-tab-btn" data-bs-toggle="tab" data-bs-target="#subscriber2-tab" type="button" role="tab">
-                            <i class="fas fa-credit-card me-1"></i>Subscriber2 <span class="badge bg-primary" id="subscriber2-count-badge">0</span>
+                            <i class="fas fa-credit-card me-1"></i>Payment Methods <span class="badge bg-primary" id="subscriber2-count-badge">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="subscriber3-tab-btn" data-bs-toggle="tab" data-bs-target="#subscriber3-tab" type="button" role="tab">
-                            <i class="fas fa-house-user me-1"></i>Subscriber3 <span class="badge bg-primary" id="subscriber3-count-badge">0</span>
+                            <i class="fas fa-house-user me-1"></i>Billing Addresses <span class="badge bg-primary" id="subscriber3-count-badge">0</span>
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
@@ -593,7 +598,7 @@
                     <div class="tab-pane fade" id="user2-tab" role="tabpanel">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-phone me-2"></i>user2 (Phone Numbers)</span>
+                                <span><i class="fas fa-phone me-2"></i>User Phones</span>
                                 <span class="badge bg-secondary" id="user2-table-count">0 rows</span>
                             </div>
                             <div class="card-body p-0">
@@ -689,6 +694,31 @@
                                             </tr>
                                         </thead>
                                         <tbody id="db-ratings-table">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating2 (Review Texts) Table -->
+                    <div class="tab-pane fade" id="rating2-tab" role="tabpanel">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-comment me-2"></i>Review Texts</span>
+                                <span class="badge bg-secondary" id="rating2-table-count">0 rows</span>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>movie_id (PK/FK)</th>
+                                                <th>rating_id (PK)</th>
+                                                <th>review_text</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="db-rating2-table">
                                         </tbody>
                                     </table>
                                 </div>
@@ -796,7 +826,7 @@
                     <div class="tab-pane fade" id="subscriber2-tab" role="tabpanel">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-credit-card me-2"></i>subscriber2 (Payment Methods)</span>
+                                <span><i class="fas fa-credit-card me-2"></i>Payment Methods</span>
                                 <span class="badge bg-secondary" id="subscriber2-table-count">0 rows</span>
                             </div>
                             <div class="card-body p-0">
@@ -820,7 +850,7 @@
                     <div class="tab-pane fade" id="subscriber3-tab" role="tabpanel">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-house-user me-2"></i>subscriber3 (Billing Address)</span>
+                                <span><i class="fas fa-house-user me-2"></i>Billing Addresses</span>
                                 <span class="badge bg-secondary" id="subscriber3-table-count">0 rows</span>
                             </div>
                             <div class="card-body p-0">
